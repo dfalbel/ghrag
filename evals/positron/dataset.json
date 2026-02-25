@@ -1,0 +1,1369 @@
+[
+  {
+    "input": "detect dev ark before bundled fallback",
+    "target": "2163",
+    "id": "positron-2163",
+    "metadata": {
+      "title": "Detect dev ark before falling back to bundled ark",
+      "url": "https://github.com/posit-dev/positron/pull/2163",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "prompt renderer ignores active chat mode",
+    "target": "10777",
+    "id": "positron-10777",
+    "metadata": {
+      "title": "Assistant: Use active chat mode for prompt renderer when invoked via API",
+      "url": "https://github.com/posit-dev/positron/pull/10777",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Python interpreter not found for sessions",
+    "target": "11473",
+    "id": "positron-11473",
+    "metadata": {
+      "title": "Python Installation not found for Sessions, Quarto, but py-File executable",
+      "url": "https://github.com/posit-dev/positron/issues/11473",
+      "labels": [
+        "info needed"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "e2e import expect from test setup",
+    "target": "7804",
+    "id": "positron-7804",
+    "metadata": {
+      "title": "e2e - expect as part of test.setup",
+      "url": "https://github.com/posit-dev/positron/pull/7804",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "R console freezes Enter not working",
+    "target": "7728",
+    "id": "positron-7728",
+    "metadata": {
+      "title": "Console freezes working with R",
+      "url": "https://github.com/posit-dev/positron/issues/7728",
+      "labels": [
+        "info needed"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "open dataframe viewer from script click",
+    "target": "8411",
+    "id": "positron-8411",
+    "metadata": {
+      "title": "\"Cmd + right click\" to open a data.frame/data.table object from the script to the viewer",
+      "url": "https://github.com/posit-dev/positron/issues/8411",
+      "labels": [
+        "info needed"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "upstream integration August 2025 changes",
+    "target": "9257",
+    "id": "positron-9257",
+    "metadata": {
+      "title": "Integrate changes from upstream August 2025",
+      "url": "https://github.com/posit-dev/positron/issues/9257",
+      "labels": [
+        "area: builds",
+        "area: core"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "pyrefly completion suggestion e2e test",
+    "target": "10846",
+    "id": "positron-10846",
+    "metadata": {
+      "title": "e2e test - pyrefly basic completion suggestion",
+      "url": "https://github.com/posit-dev/positron/pull/10846",
+      "labels": [],
+      "type": "pr",
+      "state": "open"
+    }
+  },
+  {
+    "input": "Codex not recognizing Positron as VSCode",
+    "target": "11965",
+    "id": "positron-11965",
+    "metadata": {
+      "title": "Positron is not recognized by Codex",
+      "url": "https://github.com/posit-dev/positron/issues/11965",
+      "labels": [],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "dot dot 1 symbol scope warning",
+    "target": "3699",
+    "id": "positron-3699",
+    "metadata": {
+      "title": "`..1` and friends not recognised as symbols in scope",
+      "url": "https://github.com/posit-dev/positron/issues/3699",
+      "labels": [
+        "bug",
+        "lang: r"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "parameter documentation font console editor difference",
+    "target": "7225",
+    "id": "positron-7225",
+    "metadata": {
+      "title": "R: Font difference between parameter documentation in Console vs Editor",
+      "url": "https://github.com/posit-dev/positron/issues/7225",
+      "labels": [
+        "bug",
+        "area: ui",
+        "lang: r"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "default R interpreter not saved state",
+    "target": "3057",
+    "id": "positron-3057",
+    "metadata": {
+      "title": "ensure default R interpreter is saved to state",
+      "url": "https://github.com/posit-dev/positron/pull/3057",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "move line down pipe indentation broken",
+    "target": "3644",
+    "id": "positron-3644",
+    "metadata": {
+      "title": "R indentation issues with pipes and \"Move Line Down\" ",
+      "url": "https://github.com/posit-dev/positron/issues/3644",
+      "labels": [
+        "bug",
+        "lang: r",
+        "area: formatting"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "Python version mismatch notebook kernel venv",
+    "target": "1530",
+    "id": "positron-1530",
+    "metadata": {
+      "title": "Spike on Notebooks: How to solve Python mismatch problems with Jupyter kernel, venvs, etc",
+      "url": "https://github.com/posit-dev/positron/issues/1530",
+      "labels": [
+        "area: notebooks"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "sort missing values NA on top",
+    "target": "11639",
+    "id": "positron-11639",
+    "metadata": {
+      "title": "Add option to list missing values on top when sorting columns",
+      "url": "https://github.com/posit-dev/positron/issues/11639",
+      "labels": [
+        "enhancement",
+        "area: data explorer",
+        "support"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "e2e flaky test fixes retry logic",
+    "target": "10964",
+    "id": "positron-10964",
+    "metadata": {
+      "title": "e2e: more flake fixes",
+      "url": "https://github.com/posit-dev/positron/pull/10964",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "generate-comms fails name enum property",
+    "target": "2139",
+    "id": "positron-2139",
+    "metadata": {
+      "title": "An object with a property named `name` and an enum property can cause `generate-comms.ts` to fail",
+      "url": "https://github.com/posit-dev/positron/issues/2139",
+      "labels": [
+        "area: core"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "kernel name special characters e2e fix",
+    "target": "8479",
+    "id": "positron-8479",
+    "metadata": {
+      "title": "E2E test: allow kernel names with special characters",
+      "url": "https://github.com/posit-dev/positron/pull/8479",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "install Positron without admin rights Windows",
+    "target": "3703",
+    "id": "positron-3703",
+    "metadata": {
+      "title": "Allow Positron to be installed without admin rights on Windows",
+      "url": "https://github.com/posit-dev/positron/issues/3703",
+      "labels": [
+        "enhancement",
+        "os-windows",
+        "area: builds",
+        "support",
+        "investigate"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "build break async await fix",
+    "target": "2668",
+    "id": "positron-2668",
+    "metadata": {
+      "title": "Fix build break",
+      "url": "https://github.com/posit-dev/positron/pull/2668",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "bokeh show PermissionError positron windows",
+    "target": "4397",
+    "id": "positron-4397",
+    "metadata": {
+      "title": "bokeh plot library doesn't work on positron in windows",
+      "url": "https://github.com/posit-dev/positron/issues/4397",
+      "labels": [
+        "bug",
+        "area: plots",
+        "lang: python",
+        "theme: app builder"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "rebuild powershell script Windows build",
+    "target": "156",
+    "id": "positron-156",
+    "metadata": {
+      "title": "Create a rebuild.ps1 script for Windows.",
+      "url": "https://github.com/posit-dev/positron/issues/156",
+      "labels": [],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Python language id send REPL fix",
+    "target": "236",
+    "id": "positron-236",
+    "metadata": {
+      "title": "Bump positron-python to fix issue #235",
+      "url": "https://github.com/posit-dev/positron/pull/236",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Update upstream VS Code 1.99",
+    "target": "7185",
+    "id": "positron-7185",
+    "metadata": {
+      "title": "Update to 1.99.0 from upstream VS Code",
+      "url": "https://github.com/posit-dev/positron/pull/7185",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Variables pane categories packages modules",
+    "target": "2127",
+    "id": "positron-2127",
+    "metadata": {
+      "title": "Epic: Variables pane categories and Package/module/submodule view (handling language-pack differences)",
+      "url": "https://github.com/posit-dev/positron/issues/2127",
+      "labels": [
+        "epic",
+        "area: variables"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "e2e test session reload window",
+    "target": "6751",
+    "id": "positron-6751",
+    "metadata": {
+      "title": "e2e-test: add session reload test",
+      "url": "https://github.com/posit-dev/positron/pull/6751",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "prompt install missing package automatically",
+    "target": "4071",
+    "id": "positron-4071",
+    "metadata": {
+      "title": "Prompt to install a package when a script or notebook loads it",
+      "url": "https://github.com/posit-dev/positron/issues/4071",
+      "labels": [
+        "enhancement",
+        "area: diagnostics",
+        "area: code actions"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "replace Pyright with Pyrefly extension",
+    "target": "10647",
+    "id": "positron-10647",
+    "metadata": {
+      "title": "python: bootstrap pyrefly extension",
+      "url": "https://github.com/posit-dev/positron/pull/10647",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "bump slack github action version",
+    "target": "613",
+    "id": "positron-613",
+    "metadata": {
+      "title": "Bump slackapi/slack-github-action from 1.23.0 to 1.24.0",
+      "url": "https://github.com/posit-dev/positron/pull/613",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "devpod container 403 error positron",
+    "target": "7894",
+    "id": "positron-7894",
+    "metadata": {
+      "title": "\"Open in devpod container\" fails with 403 error",
+      "url": "https://github.com/posit-dev/positron/issues/7894",
+      "labels": [
+        "info needed"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "data viewer color theme update",
+    "target": "1750",
+    "id": "positron-1750",
+    "metadata": {
+      "title": "Update dataviewer colors",
+      "url": "https://github.com/posit-dev/positron/pull/1750",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "R language support rpy2 polyglot notebook",
+    "target": "9600",
+    "id": "positron-9600",
+    "metadata": {
+      "title": "Provide R language server support to allow a polyglot notebook",
+      "url": "https://github.com/posit-dev/positron/issues/9600",
+      "labels": [
+        "enhancement",
+        "area: notebooks",
+        "notebooks-magic_commands",
+        "notebooks-roadmap"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "grid.points plot not showing after clear",
+    "target": "6702",
+    "id": "positron-6702",
+    "metadata": {
+      "title": "Plots: R: `grid::grid.points(1:10, 1:10)` doesn't trigger a new plot after clearing all plots",
+      "url": "https://github.com/posit-dev/positron/issues/6702",
+      "labels": [
+        "area: plots",
+        "lang: r",
+        "investigate"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Jupyter to Positron migration guide",
+    "target": "10757",
+    "id": "positron-10757",
+    "metadata": {
+      "title": "Create migration guide walkthough for Jupyter > Positron Notebooks",
+      "url": "https://github.com/posit-dev/positron/issues/10757",
+      "labels": [
+        "area: notebooks"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "go to definition jumps to comment",
+    "target": "4886",
+    "id": "positron-4886",
+    "metadata": {
+      "title": "Ctrl+click to go to function definition doesn't work if a comment contains the name of the function",
+      "url": "https://github.com/posit-dev/positron/issues/4886",
+      "labels": [
+        "bug",
+        "lang: r",
+        "support",
+        "area: symbols"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "open terminal localhost links in viewer",
+    "target": "2612",
+    "id": "positron-2612",
+    "metadata": {
+      "title": "[python] open stdout localhost links in terminal in Viewer",
+      "url": "https://github.com/posit-dev/positron/pull/2612",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "enable auto update checking Positron",
+    "target": "6194",
+    "id": "positron-6194",
+    "metadata": {
+      "title": "Enable update checks and allow auto-updates",
+      "url": "https://github.com/posit-dev/positron/pull/6194",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "data explorer performance limits large datasets",
+    "target": "9265",
+    "id": "positron-9265",
+    "metadata": {
+      "title": "Add limits to Data Explorer",
+      "url": "https://github.com/posit-dev/positron/issues/9265",
+      "labels": [
+        "area: data explorer",
+        "frontend"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "reh-web build dependencies fix",
+    "target": "4426",
+    "id": "positron-4426",
+    "metadata": {
+      "title": "Fix up dependencies and build artifacts for reh-web build",
+      "url": "https://github.com/posit-dev/positron/pull/4426",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "subprocess.run autocomplete missing keyword arguments",
+    "target": "2758",
+    "id": "positron-2758",
+    "metadata": {
+      "title": "Python: some arguments are omitted from autocompletion list for subprocess.run",
+      "url": "https://github.com/posit-dev/positron/issues/2758",
+      "labels": [
+        "bug",
+        "lang: python",
+        "area: completions"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "rename LanguageRuntimeProvider to LanguageRuntimeDiscoverer",
+    "target": "1870",
+    "id": "positron-1870",
+    "metadata": {
+      "title": "Rename existing `LanguageRuntimeProvider` to `LanguageRuntimeDiscoverer`",
+      "url": "https://github.com/posit-dev/positron/pull/1870",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "comm session lifecycle dispose cleanup errors",
+    "target": "6278",
+    "id": "positron-6278",
+    "metadata": {
+      "title": "Fix issues around comm and session lifecycles",
+      "url": "https://github.com/posit-dev/positron/pull/6278",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "merge upstream vscode 1.100 release",
+    "target": "7610",
+    "id": "positron-7610",
+    "metadata": {
+      "title": "Merge 1.100 from upstream",
+      "url": "https://github.com/posit-dev/positron/issues/7610",
+      "labels": [
+        "area: core"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "bokeh plot not showing after hvplot",
+    "target": "4541",
+    "id": "positron-4541",
+    "metadata": {
+      "title": "Plain bokeh plots _after_ loading `hvplot` don't work. ",
+      "url": "https://github.com/posit-dev/positron/issues/4541",
+      "labels": [
+        "area: plots",
+        "area: ui",
+        "theme: app builder"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "R multi-line comment shortcut key",
+    "target": "5096",
+    "id": "positron-5096",
+    "metadata": {
+      "title": "More convenient support for R language",
+      "url": "https://github.com/posit-dev/positron/issues/5096",
+      "labels": [],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Python session shutdown hangs fix",
+    "target": "7084",
+    "id": "positron-7084",
+    "metadata": {
+      "title": "Fix Python shutdown hangs",
+      "url": "https://github.com/posit-dev/positron/pull/7084",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "remove Anthropic AI SDK setting",
+    "target": "10531",
+    "id": "positron-10531",
+    "metadata": {
+      "title": "Assistant: remove Anthropic AI SDK and corresponding setting",
+      "url": "https://github.com/posit-dev/positron/issues/10531",
+      "labels": [
+        "polishing",
+        "area: assistant"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "notebook cell execution queue order",
+    "target": "3267",
+    "id": "positron-3267",
+    "metadata": {
+      "title": "Queue notebook cell executions",
+      "url": "https://github.com/posit-dev/positron/pull/3267",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "modal dialog keyboard override enter key",
+    "target": "3442",
+    "id": "positron-3442",
+    "metadata": {
+      "title": "Allow overrides of keyboard behavior on modal dialogs",
+      "url": "https://github.com/posit-dev/positron/pull/3442",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "console Ctrl+C interrupt handling improvement",
+    "target": "1240",
+    "id": "positron-1240",
+    "metadata": {
+      "title": "Updates to console interrupt handling to address 1221 and 1239",
+      "url": "https://github.com/posit-dev/positron/pull/1240",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "data explorer context menu keyboard shortcut",
+    "target": "3377",
+    "id": "positron-3377",
+    "metadata": {
+      "title": "In Positron Data Explorer, we need a keyboard shortcut / accessible way to access the context menus",
+      "url": "https://github.com/posit-dev/positron/issues/3377",
+      "labels": [
+        "enhancement",
+        "area: data explorer"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "open RData file from Finder",
+    "target": "2347",
+    "id": "positron-2347",
+    "metadata": {
+      "title": "R: Loading a `.RData` file from Finder",
+      "url": "https://github.com/posit-dev/positron/issues/2347",
+      "labels": [
+        "bug",
+        "lang: r"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "minimatch ReDoS vulnerability glob upgrade",
+    "target": "11994",
+    "id": "positron-11994",
+    "metadata": {
+      "title": "[Snyk] Security upgrade glob from 9.3.5 to 12.0.0",
+      "url": "https://github.com/posit-dev/positron/pull/11994",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "ggplot legend items overlapping Positron",
+    "target": "7223",
+    "id": "positron-7223",
+    "metadata": {
+      "title": "Inconsistent overlapping of ggplot legend items",
+      "url": "https://github.com/posit-dev/positron/issues/7223",
+      "labels": [
+        "area: plots",
+        "lang: r",
+        "info needed"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "inline completions settings description update",
+    "target": "9976",
+    "id": "positron-9976",
+    "metadata": {
+      "title": "assistant: update inline completions enable/exclude settings descriptions",
+      "url": "https://github.com/posit-dev/positron/pull/9976",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "refactor automation waitForElement instead locators",
+    "target": "3168",
+    "id": "positron-3168",
+    "metadata": {
+      "title": "Refactor console and variables automation to use `waitForElement(s)` instead of locators",
+      "url": "https://github.com/posit-dev/positron/pull/3168",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "default SCM view tree mode",
+    "target": "1406",
+    "id": "positron-1406",
+    "metadata": {
+      "title": "Default SCM view to 'tree'",
+      "url": "https://github.com/posit-dev/positron/pull/1406",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Positron deploy Linux server like RStudio",
+    "target": "4004",
+    "id": "positron-4004",
+    "metadata": {
+      "title": "Can Positron be deployed on Linux servers to achieve functionality similar to Rstudio?",
+      "url": "https://github.com/posit-dev/positron/issues/4004",
+      "labels": [
+        "duplicate",
+        "enhancement"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "restart console execute current file command",
+    "target": "3407",
+    "id": "positron-3407",
+    "metadata": {
+      "title": "Command to restart the console and execute the current file",
+      "url": "https://github.com/posit-dev/positron/issues/3407",
+      "labels": [
+        "enhancement",
+        "lang: python",
+        "usability"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "data explorer summary statistics padding",
+    "target": "3079",
+    "id": "positron-3079",
+    "metadata": {
+      "title": "Data Explorer: Reduce padding for summary statistics",
+      "url": "https://github.com/posit-dev/positron/issues/3079",
+      "labels": [
+        "enhancement",
+        "area: data explorer",
+        "frontend"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "macOS CI hosted actions runner",
+    "target": "1914",
+    "id": "positron-1914",
+    "metadata": {
+      "title": "Use hosted Actions Runner to revive macOS",
+      "url": "https://github.com/posit-dev/positron/pull/1914",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "vsda module missing 404 Linux",
+    "target": "1402",
+    "id": "positron-1402",
+    "metadata": {
+      "title": "Missing vsda module on Linux",
+      "url": "https://github.com/posit-dev/positron/issues/1402",
+      "labels": [
+        "os-linux",
+        "area: workbench"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "run e2e tests RHEL CI",
+    "target": "9297",
+    "id": "positron-9297",
+    "metadata": {
+      "title": "E2E test: allow running full suite on RHEL",
+      "url": "https://github.com/posit-dev/positron/pull/9297",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "windows CI workflow timeout increase",
+    "target": "5455",
+    "id": "positron-5455",
+    "metadata": {
+      "title": "test: just bumping windows full suite workflow timeout",
+      "url": "https://github.com/posit-dev/positron/pull/5455",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "discover R installations Windows registry",
+    "target": "4820",
+    "id": "positron-4820",
+    "metadata": {
+      "title": "Try harder to discover R installations from the Windows registry",
+      "url": "https://github.com/posit-dev/positron/issues/4820",
+      "labels": [
+        "os-windows",
+        "lang: r"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "new python folder race condition fix",
+    "target": "11955",
+    "id": "positron-11955",
+    "metadata": {
+      "title": "wip: fix new python folder race condition",
+      "url": "https://github.com/posit-dev/positron/pull/11955",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "extract function refactoring command R",
+    "target": "9590",
+    "id": "positron-9590",
+    "metadata": {
+      "title": "Add RStudio-like \"Extract Function\" command",
+      "url": "https://github.com/posit-dev/positron/issues/9590",
+      "labels": [
+        "enhancement",
+        "lang: r",
+        "support",
+        "area: kernels"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "Ctrl-R history search letter p bug",
+    "target": "7619",
+    "id": "positron-7619",
+    "metadata": {
+      "title": "history search in console by Ctrl-R acts weird with the letter \"p\"",
+      "url": "https://github.com/posit-dev/positron/issues/7619",
+      "labels": [
+        "area: console"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "update positron-python vscode-python v2024.4",
+    "target": "2678",
+    "id": "positron-2678",
+    "metadata": {
+      "title": "Apply positron-python updates from vscode-python v2024.4.0",
+      "url": "https://github.com/posit-dev/positron/pull/2678",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "notebook kernel not auto connecting runtime",
+    "target": "7285",
+    "id": "positron-7285",
+    "metadata": {
+      "title": "In new jupyter projects the starting notebook doesn't connect to the runtime automatically",
+      "url": "https://github.com/posit-dev/positron/issues/7285",
+      "labels": [
+        "area: folder template",
+        "area: notebooks"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "plots pane size not remembered",
+    "target": "10277",
+    "id": "positron-10277",
+    "metadata": {
+      "title": "Plots pane no longer remembers changed shape and size during Positron session",
+      "url": "https://github.com/posit-dev/positron/issues/10277",
+      "labels": [
+        "info needed"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "right arrow assignment linter scope error",
+    "target": "2704",
+    "id": "positron-2704",
+    "metadata": {
+      "title": "Ark: Diagnostics: RHS of right arrow incorrectly linted",
+      "url": "https://github.com/posit-dev/positron/issues/2704",
+      "labels": [
+        "bug",
+        "lang: r",
+        "support"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "wrong active Python interpreter no workspace",
+    "target": "11281",
+    "id": "positron-11281",
+    "metadata": {
+      "title": "python: without a workspace, extension sometimes uses the wrong active interpreter",
+      "url": "https://github.com/posit-dev/positron/issues/11281",
+      "labels": [
+        "bug",
+        "lang: python",
+        "area: runtimes"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "notebook test aria label update",
+    "target": "11068",
+    "id": "positron-11068",
+    "metadata": {
+      "title": "e2e: update aria label for nb tests",
+      "url": "https://github.com/posit-dev/positron/pull/11068",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Ctrl-C copy console Windows Linux",
+    "target": "3090",
+    "id": "positron-3090",
+    "metadata": {
+      "title": "Fix/windows copy from console",
+      "url": "https://github.com/posit-dev/positron/pull/3090",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "ggplot2 aes autocomplete aesthetics suggestions",
+    "target": "522",
+    "id": "positron-522",
+    "metadata": {
+      "title": "ark: support completion for ggplot2 aesthetics",
+      "url": "https://github.com/posit-dev/positron/issues/522",
+      "labels": [
+        "lang: r",
+        "area: kernels",
+        "area: completions"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "execute current code section R",
+    "target": "8902",
+    "id": "positron-8902",
+    "metadata": {
+      "title": "Execute Current Code Section (defined by special header comments) command",
+      "url": "https://github.com/posit-dev/positron/issues/8902",
+      "labels": [
+        "enhancement",
+        "lang: r",
+        "support"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "console multiline history navigation cursor position",
+    "target": "889",
+    "id": "positron-889",
+    "metadata": {
+      "title": "Alternate fix to address #597",
+      "url": "https://github.com/posit-dev/positron/pull/889",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "sync amalthea update Rust version",
+    "target": "918",
+    "id": "positron-918",
+    "metadata": {
+      "title": "Sync amalthea",
+      "url": "https://github.com/posit-dev/positron/pull/918",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "notebook cell execution time tooltip missing",
+    "target": "9897",
+    "id": "positron-9897",
+    "metadata": {
+      "title": "Positron Notebooks - Execution time for a running cell should be displayed in cell execution summary tooltip",
+      "url": "https://github.com/posit-dev/positron/issues/9897",
+      "labels": [
+        "enhancement",
+        "area: notebooks",
+        "theme: new notebook frontend"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "switch project HTTP 404 session errors",
+    "target": "6799",
+    "id": "positron-6799",
+    "metadata": {
+      "title": "Desktop: Switching back to a previously open project in the same window results in HTTP errors",
+      "url": "https://github.com/posit-dev/positron/issues/6799",
+      "labels": [
+        "bug",
+        "area: runtimes",
+        "area: kallichore"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "configurable kernel session startup timeout",
+    "target": "5693",
+    "id": "positron-5693",
+    "metadata": {
+      "title": "Add configurable session timeouts for supervisor",
+      "url": "https://github.com/posit-dev/positron/pull/5693",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "session start timeout connecting failed",
+    "target": "7444",
+    "id": "positron-7444",
+    "metadata": {
+      "title": "Start failed: timed out connecting to session",
+      "url": "https://github.com/posit-dev/positron/issues/7444",
+      "labels": [
+        "info needed"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "refresh interpreter discovery command palette",
+    "target": "4269",
+    "id": "positron-4269",
+    "metadata": {
+      "title": "Provide an easier way to refresh interpreter discovery via Command Palette",
+      "url": "https://github.com/posit-dev/positron/issues/4269",
+      "labels": [
+        "area: core",
+        "lang: python",
+        "lang: r",
+        "area: runtimes",
+        "theme: multisession console"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "R session ECONNREFUSED connection refused error",
+    "target": "11114",
+    "id": "positron-11114",
+    "metadata": {
+      "title": "Connection Issues as described in #5243",
+      "url": "https://github.com/posit-dev/positron/issues/11114",
+      "labels": [],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "start session hyperlink keyboard accessibility",
+    "target": "7722",
+    "id": "positron-7722",
+    "metadata": {
+      "title": "multisessions: \"start session\" hyperlink is not accessible",
+      "url": "https://github.com/posit-dev/positron/issues/7722",
+      "labels": [
+        "theme: multisession console"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "view magic title argument IPython",
+    "target": "2787",
+    "id": "positron-2787",
+    "metadata": {
+      "title": "Add title argument to `%view`",
+      "url": "https://github.com/posit-dev/positron/pull/2787",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "enable auto-update default setting",
+    "target": "6296",
+    "id": "positron-6296",
+    "metadata": {
+      "title": "Set auto-update to on by default",
+      "url": "https://github.com/posit-dev/positron/issues/6296",
+      "labels": [
+        "area: builds"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "e2e test outline after session restart",
+    "target": "7042",
+    "id": "positron-7042",
+    "metadata": {
+      "title": "e2e-test: add session outline restart test",
+      "url": "https://github.com/posit-dev/positron/pull/7042",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "data explorer summary panel search sort",
+    "target": "2414",
+    "id": "positron-2414",
+    "metadata": {
+      "title": "Epic: Data Explorer search and sort column information in the Summary Panel",
+      "url": "https://github.com/posit-dev/positron/issues/2414",
+      "labels": [
+        "enhancement",
+        "epic",
+        "area: data explorer"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "e2e test SCM stage commit",
+    "target": "6143",
+    "id": "positron-6143",
+    "metadata": {
+      "title": "E2E test: SCM test",
+      "url": "https://github.com/posit-dev/positron/pull/6143",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "notebook controller per interpreter runtime",
+    "target": "3113",
+    "id": "positron-3113",
+    "metadata": {
+      "title": "Create a notebook controller per interpreter",
+      "url": "https://github.com/posit-dev/positron/pull/3113",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "scrollable element button unresponsive during execution",
+    "target": "9356",
+    "id": "positron-9356",
+    "metadata": {
+      "title": "'View as scrollable element' button is NOT actionable when user clicks on it while cell is executing",
+      "url": "https://github.com/posit-dev/positron/issues/9356",
+      "labels": [
+        "area: notebooks"
+      ],
+      "type": "issue",
+      "state": "open"
+    }
+  },
+  {
+    "input": "unmanaged comms supervisor API extension",
+    "target": "9109",
+    "id": "positron-9109",
+    "metadata": {
+      "title": "Add unmanaged comms in supervisor API",
+      "url": "https://github.com/posit-dev/positron/pull/9109",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "fix linting broken main branch",
+    "target": "6123",
+    "id": "positron-6123",
+    "metadata": {
+      "title": "Fix linting",
+      "url": "https://github.com/posit-dev/positron/pull/6123",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Polars support in Data Explorer",
+    "target": "2185",
+    "id": "positron-2185",
+    "metadata": {
+      "title": "Epic: Data Explorer support for Polars",
+      "url": "https://github.com/posit-dev/positron/issues/2185",
+      "labels": [
+        "epic",
+        "area: data explorer",
+        "lang: python"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "notebook cell navigation bar redesign",
+    "target": "11162",
+    "id": "positron-11162",
+    "metadata": {
+      "title": "Redesign Cell Navigation Bar, Remove cell active blue bar & include cell execution time",
+      "url": "https://github.com/posit-dev/positron/issues/11162",
+      "labels": [
+        "area: notebooks"
+      ],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "modal dialog focus trap keyboard events",
+    "target": "744",
+    "id": "positron-744",
+    "metadata": {
+      "title": "When displaying a PositronModelDialog, ensure that focus and keyboard events remain INSIDE the dialog (e.g. F1 should not open the Command Palette)",
+      "url": "https://github.com/posit-dev/positron/issues/744",
+      "labels": [],
+      "type": "issue",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "Python autocomplete magics priority ordering",
+    "target": "7021",
+    "id": "positron-7021",
+    "metadata": {
+      "title": "python: deprioritize magics in autocompletion",
+      "url": "https://github.com/posit-dev/positron/pull/7021",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  },
+  {
+    "input": "rename Variables to Debug Variables",
+    "target": "2722",
+    "id": "positron-2722",
+    "metadata": {
+      "title": "Rename `Variables` -> `Debug Variables`",
+      "url": "https://github.com/posit-dev/positron/pull/2722",
+      "labels": [],
+      "type": "pr",
+      "state": "closed"
+    }
+  }
+]
