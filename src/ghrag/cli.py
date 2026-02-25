@@ -13,12 +13,16 @@ def main():
     command = sys.argv[1]
     repo = sys.argv[2]
 
-    if command == "sync":
-        from ghrag.github import sync
-        sync(repo)
-    elif command == "chat":
-        from ghrag.chat import chat
-        chat(repo)
-    else:
-        print(f"Unknown command: {command}. Use 'sync' or 'chat'.")
+    try:
+        if command == "sync":
+            from ghrag.github import sync
+            sync(repo)
+        elif command == "chat":
+            from ghrag.chat import chat
+            chat(repo)
+        else:
+            print(f"Unknown command: {command}. Use 'sync' or 'chat'.")
+            sys.exit(1)
+    except ValueError as e:
+        print(f"Error: {e}")
         sys.exit(1)

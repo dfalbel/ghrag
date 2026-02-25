@@ -1,12 +1,18 @@
+import re
 from pathlib import Path
 
 CACHE_ROOT = Path.home() / ".ghrag"
+_SEGMENT_RE = re.compile(r"^[A-Za-z0-9_.\-]+$")
 
 
 def validate_repo(repo: str) -> str:
     """Validate that *repo* looks like 'owner/name' with no traversal segments."""
-    parts = repo.split("/")
-    if len(parts) != 2 or any(p in ("", ".", "..") for p in parts):
+    parts = repo.strip().split("/")
+    if (
+        len(parts) != 2
+        or any(p in ("", ".", "..") for p in parts)
+        or not all(_SEGMENT_RE.match(p) for p in parts)
+    ):
         raise ValueError(
             f"Invalid repo format: {repo!r}. Expected 'owner/repo'."
         )
