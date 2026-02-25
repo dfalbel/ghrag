@@ -7,7 +7,8 @@ _SEGMENT_RE = re.compile(r"^[A-Za-z0-9_.\-]+$")
 
 def validate_repo(repo: str) -> str:
     """Validate that *repo* looks like 'owner/name' with no traversal segments."""
-    parts = repo.strip().split("/")
+    repo = repo.strip()
+    parts = repo.split("/")
     if (
         len(parts) != 2
         or any(p in ("", ".", "..") for p in parts)
