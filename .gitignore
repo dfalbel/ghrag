@@ -1,0 +1,25 @@
+# Environment and secrets
+.env
+
+# direnv
+.envrc
+
+# Claude Code local settings
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# uv lock file
+uv.lock
+
+# Cached issue data (regenerate via ghrag sync)
+issues.jsonl
+issues.meta.json
+
+# Eval logs
+logs/
+logs-positron/

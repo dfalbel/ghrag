@@ -1,0 +1,23 @@
+[project]
+name = "ghrag"
+version = "0.1.0"
+description = "GitHub Issues & PRs RAG tool"
+requires-python = ">=3.11"
+dependencies = [
+    "PyGithub",
+    "raghilda",
+    "chatlas",
+    "tqdm",
+    "chromadb",
+    "rich<14",
+]
+
+[project.scripts]
+ghrag = "ghrag.cli:main"
+
+[tool.uv.sources]
+raghilda = { path = "../raghilda", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
