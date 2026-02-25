@@ -42,20 +42,13 @@ DATASET_PATH = Path(__file__).parent / "dataset.json"
 def gh_search_issues():
     g = Github(auth=Auth.Token(get_github_token()))
 
-    async def execute(
-        query: str,
-        state: str | None = None,
-    ) -> str:
+    async def execute(query: str) -> str:
         """Search GitHub issues and PRs in the posit-dev/positron repository.
 
         Args:
             query: The search query to find relevant issues/PRs.
-            state: Filter by state - "open" or "closed". If not provided, searches all.
         """
-        qualifiers = f"repo:posit-dev/positron"
-        if state:
-            qualifiers += f" state:{state}"
-        full_query = f"{query} {qualifiers}"
+        full_query = f"{query} repo:posit-dev/positron"
 
         max_retries = 3
         for attempt in range(max_retries):

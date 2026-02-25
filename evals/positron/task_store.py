@@ -10,11 +10,10 @@ Inspect AI eval: identify Positron GitHub issues/PRs from search queries.
 Retrieval-augmented task — uses a retrieval tool to search the issue database.
 
 Usage:
-    inspect eval evals/positron/_task.py --model anthropic/claude-sonnet-4-20250514
+    inspect eval evals/positron/task_store.py --model anthropic/claude-sonnet-4-20250514
 """
 
 import json
-from datetime import datetime
 from pathlib import Path
 
 from inspect_ai import Task, task
@@ -43,37 +42,13 @@ def retrieve():
     store_path = str(get_cache_dir("posit-dev/positron") / "chroma")
     store = ChromaDBStore.connect("github_issues", location=store_path)
 
-    async def execute(
-        query: str,
-        state: str | None = None,
-        labels: str | None = None,
-        updated_after: str | None = None,
-    ) -> str:
+    async def execute(query: str) -> str:
         """Search GitHub issues and PRs for relevant information.
 
         Args:
             query: The search query to find relevant issues/PRs.
-            state: Filter by state - "open" or "closed".
-            labels: Filter issues that have this label.
-            updated_after: Only include items updated after this ISO date (e.g. "2024-01-15").
         """
-        filters = []
-        if state:
-            filters.append({"type": "eq", "key": "state", "value": state})
-        if labels:
-            filters.append({"type": "eq", "key": "labels", "value": labels})
-        if updated_after:
-            ts = int(datetime.fromisoformat(updated_after).timestamp())
-            filters.append({"type": "gte", "key": "updated_at", "value": ts})
-
-        if len(filters) == 0:
-            attributes_filter = None
-        elif len(filters) == 1:
-            attributes_filter = filters[0]
-        else:
-            attributes_filter = {"type": "and", "filters": filters}
-
-        chunks = store.retrieve(query, top_k=20, attributes_filter=attributes_filter)
+        chunks = store.retrieve(query, top_k=20)
 
         results = []
         for chunk in chunks:
