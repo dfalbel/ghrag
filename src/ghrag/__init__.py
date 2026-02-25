@@ -1,24 +1,23 @@
-import re
 from pathlib import Path
 
 CACHE_ROOT = Path.home() / ".ghrag"
 
-_REPO_RE = re.compile(r"^[A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+$")
-
 
 def validate_repo(repo: str) -> str:
-    """Validate that *repo* looks like 'owner/name' and return it unchanged."""
-    if not _REPO_RE.match(repo):
+    """Validate that *repo* looks like 'owner/name' with no traversal segments."""
+    parts = repo.split("/")
+    if len(parts) != 2 or any(p in ("", ".", "..") for p in parts):
         raise ValueError(
-            f"Invalid repo format: {repo!r}. Expected 'owner/repo' "
-            "(alphanumeric, hyphens, dots, underscores only)."
+            f"Invalid repo format: {repo!r}. Expected 'owner/repo'."
         )
     return repo
 
 
 def get_cache_dir(repo: str) -> Path:
     """Return ~/.ghrag/<owner>/<repo>/, creating it if needed."""
-    validate_repo(repo)
-    cache_dir = CACHE_ROOT / repo
+    owner, name = validate_repo(repo).split("/")
+    cache_dir = (CACHE_ROOT / owner / name).resolve()
+    if not cache_dir.is_relative_to(CACHE_ROOT.resolve()):
+        raise ValueError(f"Invalid repo format: {repo!r}.")
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
