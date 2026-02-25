@@ -8,6 +8,7 @@ def main():
         print("Usage:")
         print("  ghrag sync <owner/repo>    # Download & ingest issues")
         print("  ghrag chat <owner/repo>    # Interactive chat")
+        print("  ghrag mcp  <owner/repo>    # Start MCP server")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -20,8 +21,11 @@ def main():
         elif command == "chat":
             from ghrag.chat import chat
             chat(repo)
+        elif command == "mcp":
+            from ghrag.mcp_server import serve
+            serve(repo)
         else:
-            print(f"Unknown command: {command}. Use 'sync' or 'chat'.")
+            print(f"Unknown command: {command}. Use 'sync', 'chat', or 'mcp'.")
             sys.exit(1)
     except ValueError as e:
         print(f"Error: {e}")
