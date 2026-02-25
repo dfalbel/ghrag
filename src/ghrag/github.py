@@ -16,7 +16,10 @@ def get_github_token() -> str:
     token = os.environ.get("GITHUB_TOKEN")
     if token:
         return token
-    result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True)
+    try:
+        result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True)
+    except FileNotFoundError:
+        raise RuntimeError("No GitHub token found. Set GITHUB_TOKEN or install the gh CLI and run 'gh auth login'")
     if result.returncode == 0:
         return result.stdout.strip()
     raise RuntimeError("No GitHub token found. Set GITHUB_TOKEN or run 'gh auth login'")
@@ -134,9 +137,10 @@ def sync(repo: str):
         )
         # Seed from JSONL cache if available (e.g. store was deleted)
         if jsonl_path.exists():
-            cached_issues = [json.loads(line) for line in open(jsonl_path) if line.strip()]
-            store.ingest(cached_issues, prepare=issue_to_document)
-            print(f"Rebuilt store from cache ({len(cached_issues)} issues).")
+            all_issues = (json.loads(l) for l in open(jsonl_path) if l.strip())
+            deduped = {i["number"]: i for i in all_issues}
+            store.ingest(list(deduped.values()), prepare=issue_to_document)
+            print(f"Rebuilt store from cache ({len(deduped)} issues).")
 
     # Fetch issues from GitHub (incremental if we have a last_update)
     token = get_github_token()
