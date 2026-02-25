@@ -17,7 +17,7 @@ dependencies = [
 ghrag = "ghrag.cli:main"
 
 [tool.uv.sources]
-raghilda = { path = "../raghilda", editable = true }
+raghilda = { git = "https://github.com/dfalbel/raghilda.git" }
 
 [build-system]
 requires = ["hatchling"]
