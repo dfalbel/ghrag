@@ -37,11 +37,38 @@ def get_cache_dir(repo: str) -> Path:
     return cache_dir
 
 
-def delete(repo: str) -> None:
-    """Delete the local database for *repo*."""
+_CACHE_FILES = {"issues.jsonl", "issues.meta.json"}
+
+
+def delete(repo: str, keep_cache: bool | None = None) -> None:
+    """Delete the local database for *repo*.
+
+    Args:
+        repo: GitHub repository in "owner/repo" format.
+        keep_cache: When *True*, only remove the vector store and preserve
+            the issues cache and sync metadata so a subsequent ``sync`` can
+            rebuild without re-fetching.  When *None*, the value is read
+            from ``--keep-cache`` on the command line.
+    """
+    import sys
+
+    if keep_cache is None:
+        keep_cache = "--keep-cache" in sys.argv
+
     cache_dir = _resolve_cache_dir(repo)
     if not cache_dir.exists():
         print(f"No local database found for {repo}.")
         return
-    shutil.rmtree(cache_dir)
-    print(f"Deleted local database for {repo}.")
+
+    if keep_cache:
+        for child in cache_dir.iterdir():
+            if child.name in _CACHE_FILES:
+                continue
+            if child.is_dir():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
+        print(f"Deleted vector store for {repo} (kept issues cache).")
+    else:
+        shutil.rmtree(cache_dir)
+        print(f"Deleted local database for {repo}.")

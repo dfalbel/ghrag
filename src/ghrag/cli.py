@@ -9,7 +9,7 @@ def main():
         print("  ghrag sync   <owner/repo>    # Download & ingest issues")
         print("  ghrag chat   <owner/repo>    # Interactive chat")
         print("  ghrag mcp    <owner/repo> [--sync-interval N]  # Start MCP server")
-        print("  ghrag delete <owner/repo>    # Delete local database")
+        print("  ghrag delete <owner/repo> [--keep-cache]  # Delete local database")
         sys.exit(1)
 
     command = sys.argv[1]
