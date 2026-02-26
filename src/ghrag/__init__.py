@@ -37,6 +37,21 @@ def get_cache_dir(repo: str) -> Path:
     return cache_dir
 
 
+def list_repos() -> list[str]:
+    """Return a list of repos that have a local database."""
+    repos: list[str] = []
+    if not CACHE_ROOT.exists():
+        return repos
+    for owner_dir in sorted(CACHE_ROOT.iterdir()):
+        if not owner_dir.is_dir():
+            continue
+        for repo_dir in sorted(owner_dir.iterdir()):
+            if not repo_dir.is_dir():
+                continue
+            repos.append(f"{owner_dir.name}/{repo_dir.name}")
+    return repos
+
+
 _CACHE_FILES = {"issues.jsonl", "issues.meta.json"}
 
 

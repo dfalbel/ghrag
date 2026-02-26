@@ -7,6 +7,19 @@ import typer
 app = typer.Typer(help="GitHub Issues & PRs RAG tool")
 
 
+@app.command("list")
+def list_repos():
+    """List all repositories with a local database."""
+    from ghrag import list_repos as _list_repos
+
+    repos = _list_repos()
+    if not repos:
+        print("No local databases found.")
+        raise typer.Exit()
+    for repo in repos:
+        print(repo)
+
+
 @app.command()
 def sync(repo: str = typer.Argument(help="GitHub repo in owner/repo format")):
     """Download & ingest issues from a GitHub repository."""
