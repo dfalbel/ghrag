@@ -9,6 +9,7 @@ def main():
         print("  ghrag sync   <owner/repo>    # Download & ingest issues")
         print("  ghrag chat   <owner/repo>    # Interactive chat")
         print("  ghrag mcp    <owner/repo> [--sync-interval N]  # Start MCP server")
+        print("  ghrag delete <owner/repo>    # Delete local database")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -35,8 +36,11 @@ def main():
                     print(f"Error: --sync-interval must be an integer, got {sys.argv[idx + 1]!r}.")
                     sys.exit(1)
             serve(repo, sync_interval=sync_interval)
+        elif command == "delete":
+            from ghrag import delete
+            delete(repo)
         else:
-            print(f"Unknown command: {command}. Use 'sync', 'chat', or 'mcp'.")
+            print(f"Unknown command: {command}. Use 'sync', 'chat', 'mcp', or 'delete'.")
             sys.exit(1)
     except ValueError as e:
         print(f"Error: {e}")

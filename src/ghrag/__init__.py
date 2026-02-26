@@ -1,4 +1,5 @@
 import re
+import shutil
 from pathlib import Path
 
 CACHE_ROOT = Path.home() / ".ghrag"
@@ -20,11 +21,27 @@ def validate_repo(repo: str) -> str:
     return repo
 
 
-def get_cache_dir(repo: str) -> Path:
-    """Return ~/.ghrag/<owner>/<repo>/, creating it if needed."""
+def _resolve_cache_dir(repo: str) -> Path:
+    """Return the resolved cache path for *repo* without creating it."""
     owner, name = validate_repo(repo).split("/")
     cache_dir = (CACHE_ROOT / owner / name).resolve()
     if not cache_dir.is_relative_to(CACHE_ROOT.resolve()):
         raise ValueError(f"Invalid repo format: {repo!r}.")
+    return cache_dir
+
+
+def get_cache_dir(repo: str) -> Path:
+    """Return ~/.ghrag/<owner>/<repo>/, creating it if needed."""
+    cache_dir = _resolve_cache_dir(repo)
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
+
+
+def delete(repo: str) -> None:
+    """Delete the local database for *repo*."""
+    cache_dir = _resolve_cache_dir(repo)
+    if not cache_dir.exists():
+        print(f"No local database found for {repo}.")
+        return
+    shutil.rmtree(cache_dir)
+    print(f"Deleted local database for {repo}.")
