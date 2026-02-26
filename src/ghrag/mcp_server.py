@@ -32,19 +32,29 @@ def _background_sync(repo: str, interval_minutes: int):
             logger.exception("Background sync failed for %s", repo)
 
 
-def _parse_sync_interval() -> int | None:
-    """Extract --sync-interval value from sys.argv."""
-    if "--sync-interval" not in sys.argv:
-        return None
-    idx = sys.argv.index("--sync-interval")
-    if idx + 1 >= len(sys.argv):
-        print("Error: --sync-interval requires a value (minutes).", file=sys.stderr)
-        sys.exit(1)
+def _parse_sync_interval(sync_interval: int | str | None = None) -> int | None:
+    """Resolve and validate sync interval from arg or ``--sync-interval``."""
+    if sync_interval is None:
+        if "--sync-interval" not in sys.argv:
+            return None
+        idx = sys.argv.index("--sync-interval")
+        if idx + 1 >= len(sys.argv):
+            raise ValueError("--sync-interval requires a value (minutes).")
+        sync_interval = sys.argv[idx + 1]
+
     try:
-        return int(sys.argv[idx + 1])
-    except ValueError:
-        print(f"Error: --sync-interval must be an integer, got {sys.argv[idx + 1]!r}.", file=sys.stderr)
-        sys.exit(1)
+        interval = int(sync_interval)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"--sync-interval must be a positive integer, got {sync_interval!r}."
+        ) from exc
+
+    if interval <= 0:
+        raise ValueError(
+            f"--sync-interval must be a positive integer, got {interval!r}."
+        )
+
+    return interval
 
 
 def serve(repo: str, sync_interval: int | None = None):
@@ -56,8 +66,11 @@ def serve(repo: str, sync_interval: int | None = None):
             When *None*, the value is parsed from ``--sync-interval`` on the
             command line (if present).
     """
-    if sync_interval is None:
-        sync_interval = _parse_sync_interval()
+    try:
+        sync_interval = _parse_sync_interval(sync_interval)
+    except ValueError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        sys.exit(1)
     cache_dir = get_cache_dir(repo)
     store_path = str(cache_dir / "chroma")
     if not Path(store_path).exists():
