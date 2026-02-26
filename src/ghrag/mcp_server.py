@@ -1,7 +1,12 @@
 """MCP server exposing GitHub issue retrieval tools."""
 
+import contextlib
+import io
 import json
+import logging
 import sys
+import threading
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -9,9 +14,31 @@ from mcp.server.fastmcp import FastMCP
 
 from ghrag import get_cache_dir
 
+logger = logging.getLogger(__name__)
 
-def serve(repo: str):
-    """Start an MCP server with issue retrieval tools for the given repo."""
+
+def _background_sync(repo: str, interval_minutes: int):
+    """Run sync periodically, suppressing output to avoid corrupting stdio."""
+    from ghrag.github import sync
+
+    while True:
+        time.sleep(interval_minutes * 60)
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), \
+                 contextlib.redirect_stderr(io.StringIO()):
+                sync(repo)
+            logger.info("Background sync completed for %s", repo)
+        except Exception:
+            logger.exception("Background sync failed for %s", repo)
+
+
+def serve(repo: str, sync_interval: int | None = None):
+    """Start an MCP server with issue retrieval tools for the given repo.
+
+    Args:
+        repo: GitHub repository in "owner/repo" format.
+        sync_interval: If set, sync issues in the background every N minutes.
+    """
     cache_dir = get_cache_dir(repo)
     store_path = str(cache_dir / "chroma")
     if not Path(store_path).exists():
@@ -21,6 +48,14 @@ def serve(repo: str):
     from raghilda.store import ChromaDBStore
 
     store = ChromaDBStore.connect("github_issues", location=store_path)
+
+    if sync_interval is not None:
+        thread = threading.Thread(
+            target=_background_sync,
+            args=(repo, sync_interval),
+            daemon=True,
+        )
+        thread.start()
 
     mcp = FastMCP(f"ghrag - {repo}")
 
