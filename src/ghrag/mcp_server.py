@@ -32,29 +32,20 @@ def _background_sync(repo: str, interval_minutes: int):
             logger.exception("Background sync failed for %s", repo)
 
 
-def _parse_sync_interval(sync_interval: int | str | None = None) -> int | None:
-    """Resolve and validate sync interval from arg or ``--sync-interval``."""
-    if sync_interval is None:
-        if "--sync-interval" not in sys.argv:
-            return None
-        idx = sys.argv.index("--sync-interval")
-        if idx + 1 >= len(sys.argv):
-            raise ValueError("--sync-interval requires a value (minutes).")
-        sync_interval = sys.argv[idx + 1]
+def _parse_sync_interval(sync_interval: int | None = None) -> int | None:
+    """Validate sync interval.
 
-    try:
-        interval = int(sync_interval)
-    except (TypeError, ValueError) as exc:
+    Returns the validated interval or *None* if not set.
+    """
+    if sync_interval is None:
+        return None
+
+    if sync_interval <= 0:
         raise ValueError(
             f"--sync-interval must be a positive integer, got {sync_interval!r}."
-        ) from exc
-
-    if interval <= 0:
-        raise ValueError(
-            f"--sync-interval must be a positive integer, got {interval!r}."
         )
 
-    return interval
+    return sync_interval
 
 
 def serve(repo: str, sync_interval: int | None = None):
@@ -63,8 +54,6 @@ def serve(repo: str, sync_interval: int | None = None):
     Args:
         repo: GitHub repository in "owner/repo" format.
         sync_interval: If set, sync issues in the background every N minutes.
-            When *None*, the value is parsed from ``--sync-interval`` on the
-            command line (if present).
     """
     try:
         sync_interval = _parse_sync_interval(sync_interval)
