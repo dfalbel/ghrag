@@ -63,8 +63,7 @@ def serve(repo: str, sync_interval: int | None = None):
     cache_dir = get_cache_dir(repo)
     store_path = str(cache_dir / "chroma")
     if not Path(store_path).exists():
-        print(f"No store found at {store_path}. Run 'ghrag sync {repo}' first.", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError(f"No store found for {repo}. Run 'ghrag sync {repo}' first.")
 
     from raghilda.store import ChromaDBStore
 

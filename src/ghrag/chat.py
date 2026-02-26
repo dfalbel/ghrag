@@ -1,7 +1,6 @@
 """Interactive chat with RAG context from GitHub issues."""
 
 import json
-import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -16,8 +15,7 @@ def chat(repo: str):
     cache_dir = get_cache_dir(repo)
     store_path = str(cache_dir / "chroma")
     if not Path(store_path).exists():
-        print(f"No store found at {store_path}. Run 'ghrag sync {repo}' first.")
-        sys.exit(1)
+        raise ValueError(f"No store found for {repo}. Run 'ghrag sync {repo}' first.")
 
     store = ChromaDBStore.connect("github_issues", location=store_path)
 
