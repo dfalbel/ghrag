@@ -66,8 +66,7 @@ def delete(repo: str, keep_cache: bool = False) -> None:
     """
     cache_dir = _resolve_cache_dir(repo)
     if not cache_dir.exists():
-        print(f"No local database found for {repo}.")
-        return
+        raise ValueError(f"No local database found for {repo}.")
 
     if keep_cache:
         for child in cache_dir.iterdir():

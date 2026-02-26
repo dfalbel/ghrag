@@ -4,7 +4,6 @@ import contextlib
 import io
 import json
 import logging
-import sys
 import threading
 import time
 from datetime import datetime
@@ -55,11 +54,7 @@ def serve(repo: str, sync_interval: int | None = None):
         repo: GitHub repository in "owner/repo" format.
         sync_interval: If set, sync issues in the background every N minutes.
     """
-    try:
-        sync_interval = _parse_sync_interval(sync_interval)
-    except ValueError as exc:
-        print(f"Error: {exc}", file=sys.stderr)
-        sys.exit(1)
+    sync_interval = _parse_sync_interval(sync_interval)
     cache_dir = get_cache_dir(repo)
     store_path = str(cache_dir / "chroma")
     if not Path(store_path).exists():
