@@ -24,18 +24,7 @@ def main():
             chat(repo)
         elif command == "mcp":
             from ghrag.mcp_server import serve
-            sync_interval = None
-            if "--sync-interval" in sys.argv:
-                idx = sys.argv.index("--sync-interval")
-                if idx + 1 >= len(sys.argv):
-                    print("Error: --sync-interval requires a value (minutes).")
-                    sys.exit(1)
-                try:
-                    sync_interval = int(sys.argv[idx + 1])
-                except ValueError:
-                    print(f"Error: --sync-interval must be an integer, got {sys.argv[idx + 1]!r}.")
-                    sys.exit(1)
-            serve(repo, sync_interval=sync_interval)
+            serve(repo)
         elif command == "delete":
             from ghrag import delete
             delete(repo)

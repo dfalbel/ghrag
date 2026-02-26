@@ -32,13 +32,32 @@ def _background_sync(repo: str, interval_minutes: int):
             logger.exception("Background sync failed for %s", repo)
 
 
+def _parse_sync_interval() -> int | None:
+    """Extract --sync-interval value from sys.argv."""
+    if "--sync-interval" not in sys.argv:
+        return None
+    idx = sys.argv.index("--sync-interval")
+    if idx + 1 >= len(sys.argv):
+        print("Error: --sync-interval requires a value (minutes).", file=sys.stderr)
+        sys.exit(1)
+    try:
+        return int(sys.argv[idx + 1])
+    except ValueError:
+        print(f"Error: --sync-interval must be an integer, got {sys.argv[idx + 1]!r}.", file=sys.stderr)
+        sys.exit(1)
+
+
 def serve(repo: str, sync_interval: int | None = None):
     """Start an MCP server with issue retrieval tools for the given repo.
 
     Args:
         repo: GitHub repository in "owner/repo" format.
         sync_interval: If set, sync issues in the background every N minutes.
+            When *None*, the value is parsed from ``--sync-interval`` on the
+            command line (if present).
     """
+    if sync_interval is None:
+        sync_interval = _parse_sync_interval()
     cache_dir = get_cache_dir(repo)
     store_path = str(cache_dir / "chroma")
     if not Path(store_path).exists():
