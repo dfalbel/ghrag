@@ -13,7 +13,7 @@ import json
 import queue
 import threading
 from collections.abc import Iterator
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 from datetime import datetime
 from pathlib import Path
 
@@ -279,6 +279,7 @@ class Ingester:
         Blocks until the ``None`` sentinel or ``stop`` is set.
         """
         self._store = store
+        futures = []
         pool = ThreadPoolExecutor(max_workers=self.num_workers)
 
         def on_done(f):
@@ -296,9 +297,18 @@ class Ingester:
                     continue
                 if item is None:
                     break
-                pool.submit(self._ingest_one, item).add_done_callback(on_done)
+                fut = pool.submit(self._ingest_one, item)
+                fut.add_done_callback(on_done)
+                futures.append(fut)
         finally:
-            pool.shutdown(wait=True, cancel_futures=True)
+            if self.stop.is_set():
+                for f in futures:
+                    f.cancel()
+            elif futures:
+                _, pending = wait(futures, return_when=FIRST_EXCEPTION)
+                for f in pending:
+                    f.cancel()
+            pool.shutdown(wait=True)
 
     # -- internals ----------------------------------------------------------
 
