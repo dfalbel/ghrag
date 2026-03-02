@@ -350,4 +350,9 @@ def sync(repo: str, store_type: str = "duckdb", num_workers: int = 4):
         progress.finish()
 
     stop.raise_if_error()
+
+    if store_type == "duckdb":
+        print("Building index...")
+        store.build_index()
+
     print(f"Done! Store contains {store.size()} documents.")
