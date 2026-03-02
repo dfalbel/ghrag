@@ -52,7 +52,7 @@ def list_repos() -> list[str]:
     return repos
 
 
-_CACHE_FILES = {"issues.jsonl", "issues.meta.json"}
+_CACHE_FILES = {"issues.jsonl", "cache_last_update.txt"}
 
 
 def delete(repo: str, keep_cache: bool = False) -> None:

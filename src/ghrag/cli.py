@@ -24,7 +24,7 @@ def list_repos():
 def sync(repo: str = typer.Argument(help="GitHub repo in owner/repo format")):
     """Download & ingest issues from a GitHub repository."""
     try:
-        from ghrag.github import sync as _sync
+        from ghrag.ingest import sync as _sync
 
         _sync(repo)
     except ValueError as e:
