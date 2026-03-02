@@ -2,22 +2,18 @@
 
 import json
 from datetime import datetime
-from pathlib import Path
 
 from ghrag import get_cache_dir
 
 
-def chat(repo: str):
+def chat(repo: str, store_type: str = "duckdb"):
     """Interactive chat with RAG context from GitHub issues."""
     from chatlas import ChatOpenAI
-    from raghilda.store import ChromaDBStore
+
+    from ghrag.store import connect_store
 
     cache_dir = get_cache_dir(repo)
-    store_path = str(cache_dir / "chroma")
-    if not Path(store_path).exists():
-        raise ValueError(f"No store found for {repo}. Run 'ghrag sync {repo}' first.")
-
-    store = ChromaDBStore.connect("github_issues", location=store_path)
+    store = connect_store(repo, cache_dir, store_type)
 
     def retrieve(
         query: str,

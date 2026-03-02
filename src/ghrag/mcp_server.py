@@ -7,7 +7,6 @@ import logging
 import threading
 import time
 from datetime import datetime
-from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 
@@ -16,7 +15,7 @@ from ghrag import get_cache_dir
 logger = logging.getLogger(__name__)
 
 
-def _background_sync(repo: str, interval_minutes: int):
+def _background_sync(repo: str, store_type: str, interval_minutes: int):
     """Run sync periodically, suppressing output to avoid corrupting stdio."""
     from ghrag.ingest import sync as _sync
 
@@ -25,7 +24,7 @@ def _background_sync(repo: str, interval_minutes: int):
         try:
             with contextlib.redirect_stdout(io.StringIO()), \
                  contextlib.redirect_stderr(io.StringIO()):
-                _sync(repo)
+                _sync(repo, store_type=store_type)
             logger.info("Background sync completed for %s", repo)
         except Exception:
             logger.exception("Background sync failed for %s", repo)
@@ -47,27 +46,24 @@ def _parse_sync_interval(sync_interval: int | None = None) -> int | None:
     return sync_interval
 
 
-def serve(repo: str, sync_interval: int | None = None):
+def serve(repo: str, store_type: str = "duckdb", sync_interval: int | None = None):
     """Start an MCP server with issue retrieval tools for the given repo.
 
     Args:
         repo: GitHub repository in "owner/repo" format.
+        store_type: Vector store backend: ``"duckdb"`` or ``"chroma"``.
         sync_interval: If set, sync issues in the background every N minutes.
     """
+    from ghrag.store import connect_store
+
     sync_interval = _parse_sync_interval(sync_interval)
     cache_dir = get_cache_dir(repo)
-    store_path = str(cache_dir / "chroma")
-    if not Path(store_path).exists():
-        raise ValueError(f"No store found for {repo}. Run 'ghrag sync {repo}' first.")
-
-    from raghilda.store import ChromaDBStore
-
-    store = ChromaDBStore.connect("github_issues", location=store_path)
+    store = connect_store(repo, cache_dir, store_type)
 
     if sync_interval is not None:
         thread = threading.Thread(
             target=_background_sync,
-            args=(repo, sync_interval),
+            args=(repo, store_type, sync_interval),
             daemon=True,
         )
         thread.start()

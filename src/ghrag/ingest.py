@@ -314,36 +314,10 @@ class Ingester:
 # Top-level wiring
 # ---------------------------------------------------------------------------
 
-def _load_store(repo: str, cache_dir: Path, store_meta_path: Path):
-    """Connect to an existing ChromaDB store or create a new one."""
-    from raghilda.embedding import EmbeddingOpenAI
-    from raghilda.store import ChromaDBStore
+def sync(repo: str, store_type: str = "duckdb", num_workers: int = 4):
+    """Run a full sync: fetch issues from GitHub and ingest into the vector store."""
+    from ghrag.store import create_store
 
-    store_path = str(cache_dir / "chroma")
-    if Path(store_path).exists():
-        return ChromaDBStore.connect("github_issues", location=store_path)
-
-    # Store was (re)created — force a full ingest
-    if store_meta_path.exists():
-        store_meta_path.unlink()
-
-    return ChromaDBStore.create(
-        location=store_path,
-        embed=EmbeddingOpenAI(),
-        overwrite=True,
-        name="github_issues",
-        title=f"GitHub Issues: {repo}",
-        attributes={
-            "item_number": int,
-            "state": str,
-            "labels": str,
-            "updated_at": int,
-        },
-    )
-
-
-def sync(repo: str, num_workers: int = 4):
-    """Run a full sync: fetch issues from GitHub and ingest into ChromaDB."""
     cache_dir = get_cache_dir(repo)
     stop = StopSignal()
     progress = Progress()
@@ -351,7 +325,7 @@ def sync(repo: str, num_workers: int = 4):
     fetcher = IssueFetcher(repo, cache_dir, stop, progress)
     ingester = Ingester(cache_dir, stop, progress, num_workers)
 
-    store = _load_store(repo, cache_dir, ingester._store_meta_path)
+    store = create_store(repo, cache_dir, store_type)
 
     since = ingester.store_last_update
     q: queue.Queue[dict | None] = queue.Queue()

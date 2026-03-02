@@ -21,24 +21,34 @@ def list_repos():
 
 
 @app.command()
-def sync(repo: str = typer.Argument(help="GitHub repo in owner/repo format")):
+def sync(
+    repo: str = typer.Argument(help="GitHub repo in owner/repo format"),
+    store: str = typer.Option(
+        "duckdb", "--store", help="Vector store backend: 'duckdb' or 'chroma'"
+    ),
+):
     """Download & ingest issues from a GitHub repository."""
     try:
         from ghrag.ingest import sync as _sync
 
-        _sync(repo)
+        _sync(repo, store_type=store)
     except ValueError as e:
         print(f"Error: {e}")
         raise typer.Exit(code=1)
 
 
 @app.command()
-def chat(repo: str = typer.Argument(help="GitHub repo in owner/repo format")):
+def chat(
+    repo: str = typer.Argument(help="GitHub repo in owner/repo format"),
+    store: str = typer.Option(
+        "duckdb", "--store", help="Vector store backend: 'duckdb' or 'chroma'"
+    ),
+):
     """Interactive chat over ingested GitHub issues."""
     try:
         from ghrag.chat import chat as _chat
 
-        _chat(repo)
+        _chat(repo, store_type=store)
     except ValueError as e:
         print(f"Error: {e}")
         raise typer.Exit(code=1)
@@ -47,6 +57,9 @@ def chat(repo: str = typer.Argument(help="GitHub repo in owner/repo format")):
 @app.command()
 def mcp(
     repo: str = typer.Argument(help="GitHub repo in owner/repo format"),
+    store: str = typer.Option(
+        "duckdb", "--store", help="Vector store backend: 'duckdb' or 'chroma'"
+    ),
     sync_interval: Optional[int] = typer.Option(
         None,
         "--sync-interval",
@@ -57,7 +70,7 @@ def mcp(
     try:
         from ghrag.mcp_server import serve
 
-        serve(repo, sync_interval=sync_interval)
+        serve(repo, store_type=store, sync_interval=sync_interval)
     except ValueError as e:
         print(f"Error: {e}")
         raise typer.Exit(code=1)
