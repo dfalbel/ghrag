@@ -18,14 +18,14 @@ logger = logging.getLogger(__name__)
 
 def _background_sync(repo: str, interval_minutes: int):
     """Run sync periodically, suppressing output to avoid corrupting stdio."""
-    from ghrag.github import sync
+    from ghrag.ingest import sync as _sync
 
     while True:
         time.sleep(interval_minutes * 60)
         try:
             with contextlib.redirect_stdout(io.StringIO()), \
                  contextlib.redirect_stderr(io.StringIO()):
-                sync(repo)
+                _sync(repo)
             logger.info("Background sync completed for %s", repo)
         except Exception:
             logger.exception("Background sync failed for %s", repo)

@@ -1,14 +1,8 @@
-"""Fetch and cache GitHub issues/PRs."""
+"""Pure helper functions for GitHub issue fetching and conversion."""
 
-import json
 import os
 import subprocess
-from datetime import datetime, timezone
-from pathlib import Path
-
-from tqdm import tqdm
-
-from ghrag import get_cache_dir
+from datetime import datetime
 
 
 def get_github_token() -> str:
@@ -103,74 +97,3 @@ def issue_to_document(issue: dict):
     chunker = MarkdownChunker(chunk_size=800)
     doc = chunker.chunk_document(doc)
     return doc
-
-
-def sync(repo: str):
-    """Download issues from GitHub and build the RAG store (incremental)."""
-    from github import Auth, Github
-    from raghilda.embedding import EmbeddingOpenAI
-    from raghilda.store import ChromaDBStore
-
-    cache_dir = get_cache_dir(repo)
-    store_path = str(cache_dir / "chroma")
-    jsonl_path = cache_dir / "issues.jsonl"
-    meta_path = cache_dir / "issues.meta.json"
-
-    metadata = json.loads(meta_path.read_text()) if meta_path.exists() else {}
-    last_update = metadata.get("last_update")
-
-    if Path(store_path).exists() and last_update:
-        store = ChromaDBStore.connect("github_issues", location=store_path)
-    else:
-        store = ChromaDBStore.create(
-            location=store_path,
-            embed=EmbeddingOpenAI(),
-            overwrite=True,
-            name="github_issues",
-            title=f"GitHub Issues: {repo}",
-            attributes={
-                "item_number": int,
-                "state": str,
-                "labels": str,
-                "updated_at": int,
-            },
-        )
-        # Seed from JSONL cache if available (e.g. store was deleted)
-        if jsonl_path.exists():
-            all_issues = (json.loads(l) for l in open(jsonl_path) if l.strip())
-            deduped = {i["number"]: i for i in all_issues}
-            store.ingest(list(deduped.values()), prepare=issue_to_document)
-            print(f"Rebuilt store from cache ({len(deduped)} issues).")
-
-    # Fetch issues from GitHub (incremental if we have a last_update)
-    token = get_github_token()
-    g = Github(auth=Auth.Token(token))
-    github_repo = g.get_repo(repo)
-
-    if last_update:
-        print(f"Fetching updates since {last_update}...")
-        since = datetime.fromisoformat(last_update)
-        issues_iter = github_repo.get_issues(state="all", sort="updated", since=since)
-    else:
-        print("Fetching all issues...")
-        issues_iter = github_repo.get_issues(state="all", sort="updated")
-
-    # Fetch issues: append to JSONL cache and collect for ingestion
-    update_time = datetime.now(timezone.utc)
-    new_issues = []
-    with open(jsonl_path, "a") as f:
-        for issue in tqdm(issues_iter, total=issues_iter.totalCount, desc="Fetching"):
-            issue_dict = issue_to_dict(issue)
-            new_issues.append(issue_dict)
-            f.write(json.dumps(issue_dict) + "\n")
-
-    # Ingest only the new/updated issues (ChromaDB upserts by document ID)
-    if new_issues:
-        print(f"Ingesting {len(new_issues)} issues...")
-        store.ingest(new_issues, prepare=issue_to_document)
-
-    # Save sync timestamp so next run only fetches new/updated issues
-    metadata["last_update"] = update_time.isoformat()
-    meta_path.write_text(json.dumps(metadata, indent=2, default=str))
-
-    print(f"Done! Store contains {store.size()} documents.")
