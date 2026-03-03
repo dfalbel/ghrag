@@ -121,13 +121,13 @@ class Fetcher:
 
     def start(self, inbox: Inbox):
         """
-        Starts the issue fetcher. It will first load issues from the cache that
-        were last updated after 'since' and then start fetching the most recent
-        issues from Github.
+        Loads cached issues synchronously, then starts a background thread
+        to fetch new issues from Github.
         """
+        self._replay_cache(inbox)
+
         def _run():
             try:
-                self._replay_cache(inbox)
                 self._fetch_github(inbox)
             except Exception as exc:
                 inbox.put(Event.Error(exp=exc))
