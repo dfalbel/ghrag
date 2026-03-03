@@ -32,7 +32,7 @@ def sync(
 ):
     """Download & ingest issues from a GitHub repository."""
     try:
-        from ghrag.ingest2 import sync as _sync
+        from ghrag.ingest import sync as _sync
 
         _sync(repo, store_type=store, force=force)
     except ValueError as e:
