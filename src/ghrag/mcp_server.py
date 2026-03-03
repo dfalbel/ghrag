@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def _background_sync(repo: str, store_type: str, interval_minutes: int):
     """Run sync periodically, suppressing output to avoid corrupting stdio."""
-    from ghrag.ingest import sync as _sync
+    from ghrag.ingest2 import sync as _sync
 
     while True:
         time.sleep(interval_minutes * 60)
