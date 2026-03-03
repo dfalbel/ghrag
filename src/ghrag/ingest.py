@@ -187,13 +187,12 @@ class Fetcher:
 
 class Ingester:
 
-    _SENTINEL = object()
-
     def __init__(self, cache_dir: Path, store_type: str, store: raghilda.store.BaseStore, num_workers: int = 4):
         self._store = store
         self._num_workers = num_workers
         self._store_meta_path = cache_dir / f"store_last_update_{store_type}.txt"
-        self._queue: queue.Queue = queue.Queue(maxsize=num_workers)
+        self._queue: queue.Queue = queue.Queue()
+        self._stop_event = threading.Event()
         self._workers: list[threading.Thread] = []
         self._last_updated_at: str | None = None
         self._lock = threading.Lock()
@@ -212,21 +211,17 @@ class Ingester:
             self._workers.append(t)
 
     def submit(self, issue: dict):
-        """
-        Submit new work to the ingester pool. Blocks if we are already processing > num_workers tasks.
-        Which allows us to easily stop later.
-        """
+        """Submit new work to the ingester pool."""
         if not self._workers:
             raise RuntimeError("Ingester not started")
         self._queue.put(issue)
 
     def stop(self):
         """
-        Finishes processing the internal queue and closes the ingesting threads.
-        Writes the update_date of the last ingested issue.
+        Signal workers to stop, join them, and write the last update date.
+        Workers finish their current item then exit.
         """
-        for _ in self._workers:
-            self._queue.put(self._SENTINEL)
+        self._stop_event.set()
         for t in self._workers:
             t.join()
         self._workers.clear()
@@ -235,10 +230,11 @@ class Ingester:
 
     def _worker(self):
         from ghrag.github import issue_to_document
-        while True:
-            item = self._queue.get()
-            if item is self._SENTINEL:
-                break
+        while not self._stop_event.is_set():
+            try:
+                item = self._queue.get(timeout=0.1)
+            except queue.Empty:
+                continue
             try:
                 doc = issue_to_document(item)
                 self._store.upsert(doc)
