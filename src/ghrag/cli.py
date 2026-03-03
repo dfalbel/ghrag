@@ -26,12 +26,15 @@ def sync(
     store: str = typer.Option(
         "duckdb", "--store", help="Vector store backend: 'duckdb' or 'chroma'"
     ),
+    force: bool = typer.Option(
+        False, "--force", help="Discard cache and refetch all issues from GitHub"
+    ),
 ):
     """Download & ingest issues from a GitHub repository."""
     try:
         from ghrag.ingest import sync as _sync
 
-        _sync(repo, store_type=store)
+        _sync(repo, store_type=store, force=force)
     except ValueError as e:
         print(f"Error: {e}")
         raise typer.Exit(code=1)

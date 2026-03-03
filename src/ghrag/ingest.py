@@ -66,6 +66,7 @@ class Progress:
     def add_total(self, n: int):
         with self._lock:
             self.total += n
+            self._print_bar()
 
     def log(self, message: str):
         """Print a status message without breaking the progress line."""
@@ -253,11 +254,11 @@ class Ingester:
     worker error.
     """
 
-    def __init__(self, cache_dir: Path, stop: StopSignal, progress: Progress, num_workers: int = 4):
+    def __init__(self, cache_dir: Path, store_type: str, stop: StopSignal, progress: Progress, num_workers: int = 4):
         self.stop = stop
         self.progress = progress
         self.num_workers = num_workers
-        self._store_meta_path = cache_dir / "store_last_update.txt"
+        self._store_meta_path = cache_dir / f"store_last_update_{store_type}.txt"
 
     # -- metadata -----------------------------------------------------------
 
@@ -324,16 +325,23 @@ class Ingester:
 # Top-level wiring
 # ---------------------------------------------------------------------------
 
-def sync(repo: str, store_type: str = "duckdb", num_workers: int = 4):
+def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers: int = 4):
     """Run a full sync: fetch issues from GitHub and ingest into the vector store."""
     from ghrag.store import create_store
 
     cache_dir = get_cache_dir(repo)
+
+    if force:
+        for name in ("cache_last_update.txt", "issues.jsonl", f"store_last_update_{store_type}.txt"):
+            p = cache_dir / name
+            if p.exists():
+                p.unlink()
+
     stop = StopSignal()
     progress = Progress()
 
     fetcher = IssueFetcher(repo, cache_dir, stop, progress)
-    ingester = Ingester(cache_dir, stop, progress, num_workers)
+    ingester = Ingester(cache_dir, store_type, stop, progress, num_workers)
 
     store = create_store(repo, cache_dir, store_type)
 

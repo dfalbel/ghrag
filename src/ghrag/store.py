@@ -20,7 +20,7 @@ def create_store(repo: str, cache_dir: Path, store_type: str = "duckdb"):
     """
     from raghilda.embedding import EmbeddingOpenAI
 
-    store_meta_path = cache_dir / "store_last_update.txt"
+    store_meta_path = cache_dir / f"store_last_update_{store_type}.txt"
 
     if store_type == "duckdb":
         from raghilda.store import DuckDBStore
