@@ -187,10 +187,10 @@ class Fetcher:
 
 class Ingester:
 
-    def __init__(self, cache_dir: Path, store_type: str, store: raghilda.store.BaseStore, num_workers: int = 4):
+    def __init__(self, store: raghilda.store.BaseStore, store_meta_path: Path, num_workers: int = 4):
         self._store = store
         self._num_workers = num_workers
-        self._store_meta_path = cache_dir / f"store_last_update_{store_type}.txt"
+        self._store_meta_path = store_meta_path
         self._queue: queue.Queue = queue.Queue()
         self._stop_event = threading.Event()
         self._workers: list[threading.Thread] = []
@@ -271,7 +271,7 @@ def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers
             since = datetime.fromisoformat(raw)
 
     fetcher = Fetcher(repo, cache_dir, since)
-    ingester = Ingester(cache_dir, store_type, store, num_workers)
+    ingester = Ingester(store, store_meta, num_workers)
 
     fetcher.start(inbox)
     ingester.start(inbox)
