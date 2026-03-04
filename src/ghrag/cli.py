@@ -122,9 +122,23 @@ def delete(
         "--keep-cache",
         help="Keep the issues cache, only delete the vector store",
     ),
+    yes: bool = typer.Option(
+        False,
+        "--yes",
+        "-y",
+        help="Skip confirmation prompt",
+    ),
 ):
     """Delete the local database for a repository."""
     try:
+        if not yes:
+            what = "vector store" if keep_cache else "local database"
+            confirmed = typer.confirm(
+                f"Delete {what} for {repo}?"
+            )
+            if not confirmed:
+                raise typer.Abort()
+
         from ghrag import delete as _delete
 
         _delete(repo, keep_cache=keep_cache)
