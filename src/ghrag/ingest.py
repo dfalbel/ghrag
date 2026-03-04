@@ -91,6 +91,9 @@ class Inbox:
             self._cond.notify()
 
     def _ready(self) -> bool:
+        # True when any queue has items to drain, or when the pipeline is
+        # fully settled (fetching finished and every fetched issue has been
+        # ingested or errored out), meaning we can emit Done.
         return bool(
             self._errors
             or self._ingest_results
