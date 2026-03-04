@@ -23,6 +23,28 @@ class Event:
     @dataclass(frozen=True)
     class Done: pass
 
+class Progress:
+    """Thread-safe progress counters, updated as events arrive."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.fetched: int = 0
+        self.ingested: int = 0
+
+    def on_fetch(self):
+        with self._lock:
+            self.fetched += 1
+            self._print()
+
+    def on_ingest(self):
+        with self._lock:
+            self.ingested += 1
+            self._print()
+
+    def _print(self):
+        print(f"\rFetched {self.fetched} | Ingested {self.ingested}", end="", flush=True)
+
+
 class Inbox:
     """Thread-safe inbox for the fetch→ingest pipeline.
 
@@ -34,13 +56,14 @@ class Inbox:
          ingestion results have been received.
     """
 
-    def __init__(self):
+    def __init__(self, progress: Progress | None = None):
         self._cond = threading.Condition()
         self._errors: list[Event.Error] = []
         self._fetch_issues: list[tuple[str, int, Event.Fetch.Ok]] = []  # min-heap
         self._ingest_results: list[Event.Ingest.Ok] = []
         self._fetch_done: bool = False
         self._pending: int = 0  # Event.Fetch.Ok put − (Event.Ingest.Ok + Event.Error w/ issue) put
+        self._progress = progress
 
     def put(self, item):
         with self._cond:
@@ -51,11 +74,15 @@ class Inbox:
                         (item.issue["updated_at"], item.issue["number"], item),
                     )
                     self._pending += 1
+                    if self._progress:
+                        self._progress.on_fetch()
                 case Event.Fetch.Done():
                     self._fetch_done = True
                 case Event.Ingest.Ok():
                     self._ingest_results.append(item)
                     self._pending -= 1
+                    if self._progress:
+                        self._progress.on_ingest()
                 case Event.Error() if item.issue is not None:
                     self._errors.append(item)
                     self._pending -= 1
@@ -261,7 +288,8 @@ def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers
                 p.unlink()
 
     store = create_store(repo, cache_dir, store_type)
-    inbox = Inbox()
+    progress = Progress()
+    inbox = Inbox(progress)
 
     # Read the last ingested date so we only fetch updates since then.
     since = None
@@ -276,19 +304,14 @@ def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers
     fetcher.start(inbox)
     ingester.start(inbox)
 
-    fetched = 0
-    ingested = 0
     try:
         while True:
             event = inbox.pop()
             match event:
                 case Event.Fetch.Ok(issue=issue):
-                    fetched += 1
-                    print(f"\rFetched {fetched} | Ingested {ingested}", end="", flush=True)
                     ingester.submit(issue)
                 case Event.Ingest.Ok():
-                    ingested += 1
-                    print(f"\rFetched {fetched} | Ingested {ingested}", end="", flush=True)
+                    pass
                 case Event.Error(exp=exc):
                     raise exc
                 case Event.Done():
@@ -298,7 +321,7 @@ def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers
     finally:
         ingester.stop()
         fetcher.stop()
-        if fetched > 0:
+        if progress.fetched > 0:
             print()
 
     if store_type == "duckdb":
