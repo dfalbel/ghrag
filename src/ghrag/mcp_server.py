@@ -2,11 +2,9 @@
 
 import contextlib
 import io
-import json
 import logging
 import threading
 import time
-from datetime import datetime
 
 from mcp.server.fastmcp import FastMCP
 
@@ -85,30 +83,10 @@ def serve(repo: str, store_type: str = "duckdb", sync_interval: int | None = Non
             labels: Filter issues that have this label.
             updated_after: Only include items updated after this ISO date (e.g. "2024-01-15").
         """
-        filters = []
-        if state:
-            filters.append({"type": "eq", "key": "state", "value": state})
-        if labels:
-            filters.append({"type": "eq", "key": "labels", "value": labels})
-        if updated_after:
-            ts = int(datetime.fromisoformat(updated_after).timestamp())
-            filters.append({"type": "gte", "key": "updated_at", "value": ts})
+        from ghrag.store import retrieve as _retrieve
 
-        if len(filters) == 0:
-            attributes_filter = None
-        elif len(filters) == 1:
-            attributes_filter = filters[0]
-        else:
-            attributes_filter = {"type": "and", "filters": filters}
-
-        chunks = store.retrieve(query, top_k=20, attributes_filter=attributes_filter)
-
-        results = []
-        for chunk in chunks:
-            result = {"text": chunk.text, "context": chunk.context}
-            if hasattr(chunk, "attributes") and chunk.attributes:
-                result["attributes"] = chunk.attributes
-            results.append(result)
-        return json.dumps(results, default=str)
+        return _retrieve(
+            store, query, state=state, labels=labels, updated_after=updated_after,
+        )
 
     mcp.run(transport="stdio")

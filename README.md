@@ -13,6 +13,12 @@ uvx ghrag sync owner/repo
 # Interactive chat with RAG context
 uvx ghrag chat owner/repo
 
+# Retrieve issues matching a query (prints JSON to stdout)
+uvx ghrag retrieve owner/repo "keyboard shortcut not working"
+
+# Retrieve with filters
+uvx ghrag retrieve owner/repo "login error" --state open --labels bug --updated-after 2024-01-15
+
 # Start an MCP server for querying issues
 uvx ghrag mcp owner/repo
 
