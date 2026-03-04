@@ -1,116 +1,101 @@
-"""Resumable GitHub issues sync pipeline.
-
-Split into two decoupled stages connected by an in-memory queue:
-
-- **IssueFetcher** (background thread): replays cached issues then fetches
-  new ones from the GitHub API, pushing dicts onto the queue.
-- **Ingester** (thread pool): reads from the queue and upserts into ChromaDB.
-
-A shared ``StopSignal`` carries the first error from either side and stops both.
-"""
-
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+import heapq
 import json
 import queue
 import threading
-from collections.abc import Iterator
-from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
-from datetime import datetime
-from pathlib import Path
+import raghilda
 
-from ghrag import get_cache_dir
-from ghrag.github import get_github_token, issue_to_dict, issue_to_document
+class Event:
+    class Fetch:
+        @dataclass(frozen=True)
+        class Ok: issue: dict
+        @dataclass(frozen=True)
+        class Done: pass
+    class Ingest:
+        @dataclass(frozen=True)
+        class Ok: issue: dict
+    @dataclass(frozen=True)
+    class Error:
+        exp: Exception
+        issue: dict | None = None
+    @dataclass(frozen=True)
+    class Done: pass
 
+class Inbox:
+    """Thread-safe inbox for the fetch→ingest pipeline.
 
-# ---------------------------------------------------------------------------
-# StopSignal
-# ---------------------------------------------------------------------------
-
-class StopSignal:
-    """Shared stop flag between fetcher and ingester.
-
-    The first error wins.  Both sides check ``is_set()`` to bail out.
+    Pop priority:
+      1. Errors (Event.Error)
+      2. Ingestion confirmations (Event.Ingest.Ok)
+      3. Fetched issues, oldest first (Event.Fetch.Ok)
+      4. Done — returned only when Event.Fetch.Done was seen and all
+         ingestion results have been received.
     """
 
     def __init__(self):
-        self._event = threading.Event()
-        self.error: BaseException | None = None
+        self._cond = threading.Condition()
+        self._errors: list[Event.Error] = []
+        self._fetch_issues: list[tuple[str, int, Event.Fetch.Ok]] = []  # min-heap
+        self._ingest_results: list[Event.Ingest.Ok] = []
+        self._fetch_done: bool = False
+        self._pending: int = 0  # Event.Fetch.Ok put − (Event.Ingest.Ok + Event.Error w/ issue) put
 
-    def stop(self, error: BaseException | None = None):
-        if self.error is None:
-            self.error = error
-        self._event.set()
+    def put(self, item):
+        with self._cond:
+            match item:
+                case Event.Fetch.Ok():
+                    heapq.heappush(
+                        self._fetch_issues,
+                        (item.issue["updated_at"], item.issue["number"], item),
+                    )
+                    self._pending += 1
+                case Event.Fetch.Done():
+                    self._fetch_done = True
+                case Event.Ingest.Ok():
+                    self._ingest_results.append(item)
+                    self._pending -= 1
+                case Event.Error() if item.issue is not None:
+                    self._errors.append(item)
+                    self._pending -= 1
+                case Event.Error():
+                    self._errors.append(item)
+            self._cond.notify()
 
-    def is_set(self) -> bool:
-        return self._event.is_set()
+    def _ready(self) -> bool:
+        return bool(
+            self._errors
+            or self._ingest_results
+            or self._fetch_issues
+            or (self._fetch_done and self._pending == 0)
+        )
 
-    def raise_if_error(self):
-        if self.error is not None:
-            raise self.error
-
-
-# ---------------------------------------------------------------------------
-# Progress
-# ---------------------------------------------------------------------------
-
-class Progress:
-    """Thread-safe progress counter shared between fetcher and ingester."""
-
-    _CLEAR = "\r\033[K"  # carriage return + clear to end of line
-
-    def __init__(self):
-        self._lock = threading.Lock()
-        self.total: int = 0
-        self.done: int = 0
-        self._active: bool = False  # whether a \r progress line is showing
-
-    def add_total(self, n: int):
-        with self._lock:
-            self.total += n
-            self._print_bar()
-
-    def log(self, message: str):
-        """Print a status message without breaking the progress line."""
-        with self._lock:
-            if self._active:
-                print(f"{self._CLEAR}{message}", flush=True)
-            else:
-                print(message, flush=True)
-            self._print_bar()
-
-    def advance(self):
-        with self._lock:
-            self.done += 1
-            self._print_bar()
-
-    def _print_bar(self):
-        """Print the progress bar (must be called with lock held)."""
-        if self.total > 0:
-            self._active = True
-            print(f"\rIngested {self.done}/{self.total} issues", end="", flush=True)
-
-    def finish(self):
-        if self._active:
-            print()
-
-
-# ---------------------------------------------------------------------------
-# IssuesCache
-# ---------------------------------------------------------------------------
+    def pop(self):
+        """Block until an item is available."""
+        with self._cond:
+            while not self._ready():
+                self._cond.wait()
+            if self._errors:
+                return self._errors.pop(0)
+            if self._ingest_results:
+                return self._ingest_results.pop(0)
+            if self._fetch_issues:
+                _, _, item = heapq.heappop(self._fetch_issues)
+                return item
+            return Event.Done()
 
 class IssuesCache:
-    """Dict of issues backed by a JSONL file.
-
-    Deduplicates by issue number.  ``save()`` rewrites the file.
-    Only the fetch thread touches this — no locking needed.
-    """
-
+    """Issue cache backed by JSONL and deduped by issue number."""
     def __init__(self, jsonl_path: Path):
         self._path = jsonl_path
         self._issues: dict[int, dict] = {}
         if jsonl_path.exists():
-            for line in open(jsonl_path):
-                line = line.strip()
-                if line:
+            with open(jsonl_path) as file:
+                for line in file:
+                    line = line.strip()
+                    if not line:
+                        continue
                     issue = json.loads(line)
                     self._issues[issue["number"]] = issue
 
@@ -121,215 +106,153 @@ class IssuesCache:
         return list(self._issues.values())
 
     def save(self):
-        with open(self._path, "w") as f:
+        with open(self._path, "w") as file:
             for issue in self._issues.values():
-                f.write(json.dumps(issue) + "\n")
+                file.write(json.dumps(issue) + "\n")
 
-
-# ---------------------------------------------------------------------------
-# IssueFetcher
-# ---------------------------------------------------------------------------
-
-class IssueFetcher:
-    """Fetches issues from GitHub, replaying from cache first.
-
-    Manages its own background thread.  Checks ``stop.is_set()`` to bail
-    out early; calls ``stop.stop(exc)`` on error.
-    """
-
-    def __init__(self, repo: str, cache_dir: Path, stop: StopSignal, progress: Progress):
-        self.repo = repo
-        self.stop = stop
-        self.progress = progress
+class Fetcher:
+    def __init__(self, repo: str, cache_dir: Path, since: datetime | None):
+        self._repo = repo
         self._cache_meta_path = cache_dir / "cache_last_update.txt"
-        self.cache = IssuesCache(cache_dir / "issues.jsonl")
+        self._cache = IssuesCache(cache_dir / "issues.jsonl")
+        self._since = since
+        self._thread: threading.Thread | None = None
+        self._last_updated_at: str | None = None
 
-    # -- metadata -----------------------------------------------------------
-
-    @property
-    def cache_last_update(self) -> str | None:
-        if self._cache_meta_path.exists():
-            return self._cache_meta_path.read_text().strip() or None
-        return None
-
-    @cache_last_update.setter
-    def cache_last_update(self, value: str):
-        self._cache_meta_path.write_text(value)
-
-    # -- public API ---------------------------------------------------------
-
-    def start(self, since: str | None, q: queue.Queue) -> threading.Thread:
-        """Start fetching in a background thread.
-
-        Puts issue dicts onto *q*, sends ``None`` sentinel when done.
-        On error, calls ``self.stop.stop(exc)``.  Always saves cache.
-
-        Returns the thread so the caller can join it.
+    def start(self, inbox: Inbox):
         """
+        Loads cached issues synchronously, then starts a background thread
+        to fetch new issues from Github.
+        """
+        self._replay_cache(inbox)
 
         def _run():
             try:
-                for issue in self._iter_issues(since):
-                    if self.stop.is_set():
-                        break
-                    q.put(issue)
-            except BaseException as exc:
-                self.stop.stop(exc)
+                self._fetch_github(inbox)
+            except Exception as exc:
+                inbox.put(Event.Error(exp=exc))
             finally:
-                self.cache.save()
-                q.put(None)  # sentinel — always sent
+                inbox.put(Event.Fetch.Done())
 
-        t = threading.Thread(target=_run)
-        t.start()
-        return t
+        self._thread = threading.Thread(target=_run, name="issue-fetcher")
+        self._thread.start()
 
-    # -- internals ----------------------------------------------------------
+    def _replay_cache(self, inbox: Inbox):
+        matching = [
+            issue for issue in self._cache.values()
+            if self._since is None
+            or datetime.fromisoformat(issue["updated_at"]) > self._since
+        ]
+        for issue in matching:
+            inbox.put(Event.Fetch.Ok(issue=issue))
 
-    def _iter_issues(self, since: str | None) -> Iterator[dict]:
-        """Yield all issues with ``updated_at >= since``.
-
-        1. Yield matching issues already in the JSONL cache.
-        2. Fetch from GitHub API starting at ``cache_last_update``
-           (which may be earlier than *since*), cache each, and yield
-           those with ``updated_at >= since``.
-        """
-        if since is not None:
-            cutoff = datetime.fromisoformat(since).timestamp()
-        else:
-            cutoff = None
-
-        # 1. Replay from cache
-        cached = self.cache.values()
-        if cached:
-            matching = [
-                i for i in cached
-                if cutoff is None
-                or datetime.fromisoformat(i["updated_at"]).timestamp() > cutoff
-            ]
-            if matching:
-                self.progress.add_total(len(matching))
-                self.progress.log(f"Replaying {len(matching)} issues from cache.")
-                yield from matching
-
-        # 2. Fetch new issues from GitHub API
+    def _fetch_github(self, inbox: Inbox):
         from github import Auth, Github
+        from ghrag.github import get_github_token, issue_to_dict
 
         token = get_github_token()
         g = Github(auth=Auth.Token(token))
-        github_repo = g.get_repo(self.repo)
+        github_repo = g.get_repo(self._repo)
 
-        cache_last_update = self.cache_last_update
+        cache_last_update = self._cache_meta_path.read_text().strip() if self._cache_meta_path.exists() else None
         if cache_last_update:
-            self.progress.log(f"Fetching updates since {cache_last_update}...")
-            api_since = datetime.fromisoformat(cache_last_update)
             issues_iter = github_repo.get_issues(
-                state="all", sort="updated", direction="asc", since=api_since,
+                state="all", sort="updated", direction="asc",
+                since=datetime.fromisoformat(cache_last_update),
             )
         else:
-            self.progress.log("Fetching all issues...")
             issues_iter = github_repo.get_issues(
                 state="all", sort="updated", direction="asc",
             )
 
         for issue in issues_iter:
-            if self.stop.is_set():
-                break
             issue_dict = issue_to_dict(issue)
-            self.cache.put(issue_dict)
-            self.cache_last_update = issue_dict["updated_at"]
+            self._cache.put(issue_dict)
+            self._last_updated_at = issue_dict["updated_at"]
 
-            if cutoff is None or datetime.fromisoformat(issue_dict["updated_at"]).timestamp() > cutoff:
-                self.progress.add_total(1)
-                yield issue_dict
+            if self._since is None or datetime.fromisoformat(issue_dict["updated_at"]) > self._since:
+                inbox.put(Event.Fetch.Ok(issue=issue_dict))
 
+    def stop(self):
+        """
+        When stop is called, we make sure the cache is stored and the last date
+        is updated in the disk cache.
+        """
+        if self._thread is not None:
+            self._thread.join()
+        self._cache.save()
+        if self._last_updated_at is not None:
+            self._cache_meta_path.write_text(self._last_updated_at)
 
-# ---------------------------------------------------------------------------
-# Ingester
-# ---------------------------------------------------------------------------
 
 class Ingester:
-    """Reads from a queue and upserts into ChromaDB using a thread pool.
 
-    Checks ``stop.is_set()`` to bail out; calls ``stop.stop(exc)`` on first
-    worker error.
-    """
-
-    def __init__(self, cache_dir: Path, store_type: str, stop: StopSignal, progress: Progress, num_workers: int = 4):
-        self.stop = stop
-        self.progress = progress
-        self.num_workers = num_workers
-        self._store_meta_path = cache_dir / f"store_last_update_{store_type}.txt"
-
-    # -- metadata -----------------------------------------------------------
-
-    @property
-    def store_last_update(self) -> str | None:
-        if self._store_meta_path.exists():
-            return self._store_meta_path.read_text().strip() or None
-        return None
-
-    @store_last_update.setter
-    def store_last_update(self, value: str):
-        self._store_meta_path.write_text(value)
-
-    # -- public API ---------------------------------------------------------
-
-    def ingest_queue(self, q: queue.Queue, store):
-        """Drain *q* and upsert each issue into *store*.
-
-        Blocks until the ``None`` sentinel or ``stop`` is set.
-        """
+    def __init__(self, store: raghilda.store.BaseStore, store_meta_path: Path, num_workers: int = 4):
         self._store = store
-        futures = []
-        pool = ThreadPoolExecutor(max_workers=self.num_workers)
+        self._num_workers = num_workers
+        self._store_meta_path = store_meta_path
+        self._queue: queue.Queue = queue.Queue()
+        self._stop_event = threading.Event()
+        self._workers: list[threading.Thread] = []
+        self._last_updated_at: str | None = None
+        self._lock = threading.Lock()
+        self._inbox: Inbox | None = None
 
-        def on_done(f):
-            if f.cancelled():
-                return
-            exc = f.exception()
-            if exc is not None:
-                self.stop.stop(exc)
+    def start(self, inbox: Inbox):
+        """
+        Starts the ingestion threads. Shouldn't be able to submit without starting.
+        """
+        if self._workers:
+            raise RuntimeError("Ingester already started")
+        self._inbox = inbox
+        for i in range(self._num_workers):
+            t = threading.Thread(target=self._worker, name=f"ingester-{i}")
+            t.start()
+            self._workers.append(t)
 
-        try:
-            while not self.stop.is_set():
-                try:
-                    item = q.get(timeout=0.5)
-                except queue.Empty:
-                    continue
-                if item is None:
-                    break
-                fut = pool.submit(self._ingest_one, item)
-                fut.add_done_callback(on_done)
-                futures.append(fut)
-        finally:
-            if self.stop.is_set():
-                for f in futures:
-                    f.cancel()
-            elif futures:
-                _, pending = wait(futures, return_when=FIRST_EXCEPTION)
-                for f in pending:
-                    f.cancel()
-            pool.shutdown(wait=True)
+    def submit(self, issue: dict):
+        """Submit new work to the ingester pool."""
+        if not self._workers:
+            raise RuntimeError("Ingester not started")
+        self._queue.put(issue)
 
-    # -- internals ----------------------------------------------------------
+    def stop(self):
+        """
+        Signal workers to stop, join them, and write the last update date.
+        Workers finish their current item then exit.
+        """
+        self._stop_event.set()
+        for t in self._workers:
+            t.join()
+        self._workers.clear()
+        if self._last_updated_at is not None:
+            self._store_meta_path.write_text(self._last_updated_at)
 
-    def _ingest_one(self, issue: dict):
-        """Upsert a single issue into the vector store."""
-        doc = issue_to_document(issue)
-        self._store.upsert(doc)
-        self.store_last_update = issue["updated_at"]
-        self.progress.advance()
+    def _worker(self):
+        from ghrag.github import issue_to_document
+        while not self._stop_event.is_set():
+            try:
+                item = self._queue.get(timeout=0.1)
+            except queue.Empty:
+                continue
+            try:
+                doc = issue_to_document(item)
+                self._store.upsert(doc)
+                with self._lock:
+                    if self._last_updated_at is None or item["updated_at"] > self._last_updated_at:
+                        self._last_updated_at = item["updated_at"]
+                self._inbox.put(Event.Ingest.Ok(issue=item))
+            except Exception as exc:
+                self._inbox.put(Event.Error(exp=exc, issue=item))
 
-
-# ---------------------------------------------------------------------------
-# Top-level wiring
-# ---------------------------------------------------------------------------
 
 def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers: int = 4):
-    """Run a full sync: fetch issues from GitHub and ingest into the vector store."""
+    from ghrag import get_cache_dir
     from ghrag.store import create_store
 
     cache_dir = get_cache_dir(repo)
+
+    store_meta = cache_dir / f"store_last_update_{store_type}.txt"
 
     if force:
         for name in ("cache_last_update.txt", "issues.jsonl", f"store_last_update_{store_type}.txt"):
@@ -337,27 +260,46 @@ def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers
             if p.exists():
                 p.unlink()
 
-    stop = StopSignal()
-    progress = Progress()
-
-    fetcher = IssueFetcher(repo, cache_dir, stop, progress)
-    ingester = Ingester(cache_dir, store_type, stop, progress, num_workers)
-
     store = create_store(repo, cache_dir, store_type)
+    inbox = Inbox()
 
-    since = ingester.store_last_update
-    q: queue.Queue[dict | None] = queue.Queue()
+    # Read the last ingested date so we only fetch updates since then.
+    since = None
+    if store_meta.exists():
+        raw = store_meta.read_text().strip()
+        if raw:
+            since = datetime.fromisoformat(raw)
 
-    fetch_thread = fetcher.start(since, q)
+    fetcher = Fetcher(repo, cache_dir, since)
+    ingester = Ingester(store, store_meta, num_workers)
+
+    fetcher.start(inbox)
+    ingester.start(inbox)
+
+    fetched = 0
+    ingested = 0
     try:
-        ingester.ingest_queue(q, store)  # blocks until sentinel or stop
+        while True:
+            event = inbox.pop()
+            match event:
+                case Event.Fetch.Ok(issue=issue):
+                    fetched += 1
+                    print(f"\rFetched {fetched} | Ingested {ingested}", end="", flush=True)
+                    ingester.submit(issue)
+                case Event.Ingest.Ok():
+                    ingested += 1
+                    print(f"\rFetched {fetched} | Ingested {ingested}", end="", flush=True)
+                case Event.Error(exp=exc):
+                    raise exc
+                case Event.Done():
+                    break
     except KeyboardInterrupt:
-        stop.stop()
+        pass
     finally:
-        fetch_thread.join()
-        progress.finish()
-
-    stop.raise_if_error()
+        ingester.stop()
+        fetcher.stop()
+        if fetched > 0:
+            print()
 
     if store_type == "duckdb":
         print("Building index...")
