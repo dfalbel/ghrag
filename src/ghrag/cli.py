@@ -41,6 +41,41 @@ def sync(
 
 
 @app.command()
+def retrieve(
+    repo: str = typer.Argument(help="GitHub repo in owner/repo format"),
+    query: str = typer.Argument(help="Search query to find relevant issues/PRs"),
+    store: str = typer.Option(
+        "duckdb", "--store", help="Vector store backend: 'duckdb' or 'chroma'"
+    ),
+    state: Optional[str] = typer.Option(
+        None, "--state", help='Filter by state: "open" or "closed"'
+    ),
+    labels: Optional[str] = typer.Option(
+        None, "--labels", help="Filter issues that have this label"
+    ),
+    updated_after: Optional[str] = typer.Option(
+        None,
+        "--updated-after",
+        help="Only include items updated after this ISO date (e.g. 2024-01-15)",
+    ),
+):
+    """Retrieve relevant issues/PRs matching a query."""
+    try:
+        from ghrag import get_cache_dir
+        from ghrag.store import connect_store, retrieve as _retrieve
+
+        cache_dir = get_cache_dir(repo)
+        st = connect_store(repo, cache_dir, store)
+        result = _retrieve(
+            st, query, state=state, labels=labels, updated_after=updated_after,
+        )
+        print(result)
+    except ValueError as e:
+        print(f"Error: {e}")
+        raise typer.Exit(code=1)
+
+
+@app.command()
 def chat(
     repo: str = typer.Argument(help="GitHub repo in owner/repo format"),
     store: str = typer.Option(

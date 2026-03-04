@@ -1,5 +1,7 @@
 """Centralized store creation and connection logic."""
 
+import json
+from datetime import datetime
 from pathlib import Path
 
 
@@ -110,3 +112,53 @@ def connect_store(repo: str, cache_dir: Path, store_type: str = "duckdb"):
         return ChromaDBStore.connect("github_issues", location=store_path)
 
     raise ValueError(f"Unknown store type: {store_type!r}. Use 'duckdb' or 'chroma'.")
+
+
+def retrieve(
+    store,
+    query: str,
+    *,
+    top_k: int = 20,
+    state: str | None = None,
+    labels: str | None = None,
+    updated_after: str | None = None,
+) -> str:
+    """Retrieve matching chunks from the store and return formatted JSON.
+
+    Args:
+        store: A connected BaseStore instance.
+        query: The search query text.
+        top_k: Maximum number of chunks to retrieve.
+        state: Filter by issue state ("open" or "closed").
+        labels: Filter by issue label.
+        updated_after: Only include items updated after this ISO date.
+
+    Returns:
+        A JSON string containing a list of result dicts with "text",
+        "context", and optionally "attributes" keys.
+    """
+    filters = []
+    if state:
+        filters.append({"type": "eq", "key": "state", "value": state})
+    if labels:
+        filters.append({"type": "eq", "key": "labels", "value": labels})
+    if updated_after:
+        ts = int(datetime.fromisoformat(updated_after).timestamp())
+        filters.append({"type": "gte", "key": "updated_at", "value": ts})
+
+    if len(filters) == 0:
+        attributes_filter = None
+    elif len(filters) == 1:
+        attributes_filter = filters[0]
+    else:
+        attributes_filter = {"type": "and", "filters": filters}
+
+    chunks = store.retrieve(query, top_k=top_k, attributes_filter=attributes_filter)
+
+    results = []
+    for chunk in chunks:
+        result = {"text": chunk.text, "context": chunk.context}
+        if hasattr(chunk, "attributes") and chunk.attributes:
+            result["attributes"] = chunk.attributes
+        results.append(result)
+    return json.dumps(results, default=str)
