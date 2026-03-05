@@ -20,6 +20,15 @@ ghrag = "ghrag.cli:main"
 [tool.uv.sources]
 raghilda = { git = "https://github.com/dfalbel/raghilda.git" }
 
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "pytest-mock",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
