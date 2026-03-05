@@ -3,9 +3,12 @@ from datetime import datetime
 from pathlib import Path
 import heapq
 import json
+import logging
 import queue
 import threading
 import raghilda
+
+logger = logging.getLogger(__name__)
 
 class Event:
     class Fetch:
@@ -69,6 +72,7 @@ class Inbox:
         with self._cond:
             match item:
                 case Event.Fetch.Ok():
+                    logger.debug("Inbox: fetched issue #%d (updated %s)", item.issue["number"], item.issue["updated_at"])
                     heapq.heappush(
                         self._fetch_issues,
                         (item.issue["updated_at"], item.issue["number"], item),
@@ -77,16 +81,20 @@ class Inbox:
                     if self._progress:
                         self._progress.on_fetch()
                 case Event.Fetch.Done():
+                    logger.debug("Inbox: fetch done")
                     self._fetch_done = True
                 case Event.Ingest.Ok():
+                    logger.debug("Inbox: ingested issue #%d", item.issue["number"])
                     self._ingest_results.append(item)
                     self._pending -= 1
                     if self._progress:
                         self._progress.on_ingest()
                 case Event.Error() if item.issue is not None:
+                    logger.debug("Inbox: error for issue #%d: %s", item.issue["number"], item.exp)
                     self._errors.append(item)
                     self._pending -= 1
                 case Event.Error():
+                    logger.debug("Inbox: error (no issue): %s", item.exp)
                     self._errors.append(item)
             self._cond.notify()
 
@@ -107,12 +115,18 @@ class Inbox:
             while not self._ready():
                 self._cond.wait()
             if self._errors:
-                return self._errors.pop(0)
+                item = self._errors.pop(0)
+                logger.debug("Inbox.pop: error event")
+                return item
             if self._ingest_results:
-                return self._ingest_results.pop(0)
+                item = self._ingest_results.pop(0)
+                logger.debug("Inbox.pop: ingest ok #%d", item.issue["number"])
+                return item
             if self._fetch_issues:
                 _, _, item = heapq.heappop(self._fetch_issues)
+                logger.debug("Inbox.pop: fetch ok #%d", item.issue["number"])
                 return item
+            logger.debug("Inbox.pop: done (pending=%d, fetch_done=%s)", self._pending, self._fetch_done)
             return Event.Done()
 
 class IssuesCache:
@@ -173,6 +187,7 @@ class Fetcher:
             if self._since is None
             or datetime.fromisoformat(issue["updated_at"]) > self._since
         ]
+        logger.debug("Fetcher: replaying %d cached issues (since=%s, total cached=%d)", len(matching), self._since, len(self._cache.values()))
         for issue in matching:
             inbox.put(Event.Fetch.Ok(issue=issue))
 
@@ -185,6 +200,7 @@ class Fetcher:
         github_repo = g.get_repo(self._repo)
 
         cache_last_update = self._cache_meta_path.read_text().strip() if self._cache_meta_path.exists() else None
+        logger.debug("Fetcher: fetching from GitHub (cache_last_update=%s, since=%s)", cache_last_update, self._since)
         if cache_last_update:
             issues_iter = github_repo.get_issues(
                 state="all", sort="updated", direction="asc",
@@ -195,13 +211,17 @@ class Fetcher:
                 state="all", sort="updated", direction="asc",
             )
 
+        count = 0
         for issue in issues_iter:
             issue_dict = issue_to_dict(issue)
             self._cache.put(issue_dict)
             self._last_updated_at = issue_dict["updated_at"]
+            count += 1
 
             if self._since is None or datetime.fromisoformat(issue_dict["updated_at"]) > self._since:
                 inbox.put(Event.Fetch.Ok(issue=issue_dict))
+
+        logger.debug("Fetcher: fetched %d issues from GitHub", count)
 
     def stop(self):
         """
@@ -260,27 +280,36 @@ class Ingester:
 
     def _worker(self):
         from ghrag.github import issue_to_document
+        name = threading.current_thread().name
+        logger.debug("Ingester: worker %s started", name)
         while not self._stop_event.is_set():
             try:
                 item = self._queue.get(timeout=0.1)
             except queue.Empty:
                 continue
             try:
+                logger.debug("Ingester: %s processing issue #%d", name, item["number"])
                 doc = issue_to_document(item)
                 self._store.upsert(doc)
+                logger.debug("Ingester: %s processed issue #%d", name, item["number"])
                 with self._lock:
                     if self._last_updated_at is None or item["updated_at"] > self._last_updated_at:
                         self._last_updated_at = item["updated_at"]
                 self._inbox.put(Event.Ingest.Ok(issue=item))
             except Exception as exc:
+                logger.debug("Ingester: %s error on issue #%d: %s", name, item["number"], exc)
                 self._inbox.put(Event.Error(exp=exc, issue=item))
+        logger.debug("Ingester: worker %s stopped", name)
 
 
 def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers: int = 4):
     from ghrag import get_cache_dir
     from ghrag.store import create_store
 
+    logger.debug("sync: repo=%s store_type=%s force=%s num_workers=%d", repo, store_type, force, num_workers)
+
     cache_dir = get_cache_dir(repo)
+    logger.debug("sync: cache_dir=%s", cache_dir)
 
     store_meta = cache_dir / f"store_last_update_{store_type}.txt"
 
@@ -300,6 +329,7 @@ def sync(repo: str, store_type: str = "duckdb", force: bool = False, num_workers
         raw = store_meta.read_text().strip()
         if raw:
             since = datetime.fromisoformat(raw)
+    logger.debug("sync: since=%s", since)
 
     fetcher = Fetcher(repo, cache_dir, since)
     ingester = Ingester(store, store_meta, num_workers)

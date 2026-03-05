@@ -1,10 +1,23 @@
 """ghrag CLI entry point."""
 
+import logging
 from typing import Optional
 
 import typer
 
+
 app = typer.Typer(help="GitHub Issues & PRs RAG tool")
+
+
+@app.callback()
+def _main(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable debug logging"),
+):
+    if verbose:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(name)s %(levelname)s %(message)s",
+        )
 
 
 @app.command("list")
