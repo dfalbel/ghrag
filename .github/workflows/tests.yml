@@ -16,6 +16,4 @@ jobs:
         with:
           enable-cache: true
 
-      - run: git config --global url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "https://github.com/"
-
       - run: uv run --extra test pytest -v
