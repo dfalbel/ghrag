@@ -25,7 +25,7 @@
   },
   {
     "input": "Python interpreter not found for sessions",
-    "target": "11473",
+    "target": ["11473", "5286"],
     "id": "positron-11473",
     "metadata": {
       "title": "Python Installation not found for Sessions, Quarto, but py-File executable",
@@ -65,7 +65,7 @@
   },
   {
     "input": "open dataframe viewer from script click",
-    "target": "8411",
+    "target": ["8411", "2974"],
     "id": "positron-8411",
     "metadata": {
       "title": "\"Cmd + right click\" to open a data.frame/data.table object from the script to the viewer",
@@ -371,7 +371,7 @@
   },
   {
     "input": "replace Pyright with Pyrefly extension",
-    "target": "10647",
+    "target": ["10647", "10304"],
     "id": "positron-10647",
     "metadata": {
       "title": "python: bootstrap pyrefly extension",
@@ -383,7 +383,7 @@
   },
   {
     "input": "bump slack github action version",
-    "target": "613",
+    "target": ["613", "2852"],
     "id": "positron-613",
     "metadata": {
       "title": "Bump slackapi/slack-github-action from 1.23.0 to 1.24.0",
@@ -409,7 +409,7 @@
   },
   {
     "input": "data viewer color theme update",
-    "target": "1750",
+    "target": ["1750", "1749"],
     "id": "positron-1750",
     "metadata": {
       "title": "Update dataviewer colors",
@@ -509,7 +509,7 @@
   },
   {
     "input": "data explorer performance limits large datasets",
-    "target": "9265",
+    "target": ["9265", "8869"],
     "id": "positron-9265",
     "metadata": {
       "title": "Add limits to Data Explorer",
@@ -606,7 +606,7 @@
   },
   {
     "input": "R multi-line comment shortcut key",
-    "target": "5096",
+    "target": ["5096", "2556"],
     "id": "positron-5096",
     "metadata": {
       "title": "More convenient support for R language",
@@ -618,7 +618,7 @@
   },
   {
     "input": "Python session shutdown hangs fix",
-    "target": "7084",
+    "target": ["7084", "7083"],
     "id": "positron-7084",
     "metadata": {
       "title": "Fix Python shutdown hangs",
@@ -645,7 +645,7 @@
   },
   {
     "input": "notebook cell execution queue order",
-    "target": "3267",
+    "target": ["3267", "1624"],
     "id": "positron-3267",
     "metadata": {
       "title": "Queue notebook cell executions",
@@ -669,7 +669,7 @@
   },
   {
     "input": "console Ctrl+C interrupt handling improvement",
-    "target": "1240",
+    "target": ["1240", "7495"],
     "id": "positron-1240",
     "metadata": {
       "title": "Updates to console interrupt handling to address 1221 and 1239",
@@ -681,7 +681,7 @@
   },
   {
     "input": "data explorer context menu keyboard shortcut",
-    "target": "3377",
+    "target": ["3377", "9457"],
     "id": "positron-3377",
     "metadata": {
       "title": "In Positron Data Explorer, we need a keyboard shortcut / accessible way to access the context menus",
@@ -711,7 +711,7 @@
   },
   {
     "input": "minimatch ReDoS vulnerability glob upgrade",
-    "target": "11994",
+    "target": ["11994", "12004"],
     "id": "positron-11994",
     "metadata": {
       "title": "[Snyk] Security upgrade glob from 9.3.5 to 12.0.0",
@@ -723,7 +723,7 @@
   },
   {
     "input": "ggplot legend items overlapping Positron",
-    "target": "7223",
+    "target": ["7223", "3698"],
     "id": "positron-7223",
     "metadata": {
       "title": "Inconsistent overlapping of ggplot legend items",
@@ -775,7 +775,7 @@
   },
   {
     "input": "Positron deploy Linux server like RStudio",
-    "target": "4004",
+    "target": ["4004", "1618"],
     "id": "positron-4004",
     "metadata": {
       "title": "Can Positron be deployed on Linux servers to achieve functionality similar to Rstudio?",
@@ -822,7 +822,7 @@
   },
   {
     "input": "macOS CI hosted actions runner",
-    "target": "1914",
+    "target": ["1914", "11038"],
     "id": "positron-1914",
     "metadata": {
       "title": "Use hosted Actions Runner to revive macOS",
@@ -861,7 +861,7 @@
   },
   {
     "input": "windows CI workflow timeout increase",
-    "target": "5455",
+    "target": ["5455", "10677"],
     "id": "positron-5455",
     "metadata": {
       "title": "test: just bumping windows full suite workflow timeout",
@@ -873,7 +873,7 @@
   },
   {
     "input": "discover R installations Windows registry",
-    "target": "4820",
+    "target": ["4820", "4878"],
     "id": "positron-4820",
     "metadata": {
       "title": "Try harder to discover R installations from the Windows registry",
@@ -1016,7 +1016,7 @@
   },
   {
     "input": "Ctrl-C copy console Windows Linux",
-    "target": "3090",
+    "target": ["3090", "2126"],
     "id": "positron-3090",
     "metadata": {
       "title": "Fix/windows copy from console",
@@ -1060,7 +1060,7 @@
   },
   {
     "input": "console multiline history navigation cursor position",
-    "target": "889",
+    "target": ["889", "2430", "7309"],
     "id": "positron-889",
     "metadata": {
       "title": "Alternate fix to address #597",
@@ -1072,7 +1072,7 @@
   },
   {
     "input": "sync amalthea update Rust version",
-    "target": "918",
+    "target": ["918", "922"],
     "id": "positron-918",
     "metadata": {
       "title": "Sync amalthea",
@@ -1100,7 +1100,7 @@
   },
   {
     "input": "switch project HTTP 404 session errors",
-    "target": "6799",
+    "target": ["6799", "5750"],
     "id": "positron-6799",
     "metadata": {
       "title": "Desktop: Switching back to a previously open project in the same window results in HTTP errors",
@@ -1116,7 +1116,7 @@
   },
   {
     "input": "configurable kernel session startup timeout",
-    "target": "5693",
+    "target": ["5693", "5620"],
     "id": "positron-5693",
     "metadata": {
       "title": "Add configurable session timeouts for supervisor",
@@ -1128,7 +1128,7 @@
   },
   {
     "input": "session start timeout connecting failed",
-    "target": "7444",
+    "target": ["7444", "8000"],
     "id": "positron-7444",
     "metadata": {
       "title": "Start failed: timed out connecting to session",
@@ -1186,7 +1186,7 @@
   },
   {
     "input": "view magic title argument IPython",
-    "target": "2787",
+    "target": ["2787", "2396"],
     "id": "positron-2787",
     "metadata": {
       "title": "Add title argument to `%view`",
@@ -1198,7 +1198,7 @@
   },
   {
     "input": "enable auto-update default setting",
-    "target": "6296",
+    "target": ["6296", "6415"],
     "id": "positron-6296",
     "metadata": {
       "title": "Set auto-update to on by default",
@@ -1302,7 +1302,7 @@
   },
   {
     "input": "Polars support in Data Explorer",
-    "target": "2185",
+    "target": ["2185", "2268"],
     "id": "positron-2185",
     "metadata": {
       "title": "Epic: Data Explorer support for Polars",
@@ -1318,7 +1318,7 @@
   },
   {
     "input": "notebook cell navigation bar redesign",
-    "target": "11162",
+    "target": ["11162", "11428"],
     "id": "positron-11162",
     "metadata": {
       "title": "Redesign Cell Navigation Bar, Remove cell active blue bar & include cell execution time",
@@ -1332,7 +1332,7 @@
   },
   {
     "input": "modal dialog focus trap keyboard events",
-    "target": "744",
+    "target": ["744", "2490"],
     "id": "positron-744",
     "metadata": {
       "title": "When displaying a PositronModelDialog, ensure that focus and keyboard events remain INSIDE the dialog (e.g. F1 should not open the Command Palette)",
@@ -1344,7 +1344,7 @@
   },
   {
     "input": "Python autocomplete magics priority ordering",
-    "target": "7021",
+    "target": ["7021", "2667", "6289"],
     "id": "positron-7021",
     "metadata": {
       "title": "python: deprioritize magics in autocompletion",

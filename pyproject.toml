@@ -25,6 +25,9 @@ test = [
     "pytest>=8.0",
     "pytest-mock",
 ]
+eval = [
+    "inspect-ai",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

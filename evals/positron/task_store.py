@@ -13,7 +13,6 @@ Usage:
     inspect eval evals/positron/task_store.py --model anthropic/claude-sonnet-4-20250514
 """
 
-import json
 from pathlib import Path
 
 from inspect_ai import Task, task
@@ -23,7 +22,7 @@ from inspect_ai.solver import generate, system_message, use_tools
 from inspect_ai.tool import tool
 
 from ghrag import get_cache_dir
-from raghilda.store import ChromaDBStore
+from ghrag.store import connect_store, retrieve as ghrag_retrieve
 
 SYSTEM_MESSAGE = (
     "You are given a search query about a Positron IDE GitHub issue or pull request. "
@@ -36,11 +35,13 @@ SYSTEM_MESSAGE = (
 
 DATASET_PATH = Path(__file__).parent / "dataset.json"
 
+REPO = "posit-dev/positron"
+
 
 @tool
 def retrieve():
-    store_path = str(get_cache_dir("posit-dev/positron") / "chroma")
-    store = ChromaDBStore.connect("github_issues", location=store_path)
+    cache_dir = get_cache_dir(REPO)
+    store = connect_store(REPO, cache_dir)
 
     async def execute(query: str) -> str:
         """Search GitHub issues and PRs for relevant information.
@@ -48,15 +49,7 @@ def retrieve():
         Args:
             query: The search query to find relevant issues/PRs.
         """
-        chunks = store.retrieve(query, top_k=20)
-
-        results = []
-        for chunk in chunks:
-            result = {"text": chunk.text, "context": chunk.context}
-            if hasattr(chunk, "attributes") and chunk.attributes:
-                result["attributes"] = chunk.attributes
-            results.append(result)
-        return json.dumps(results, default=str)
+        return ghrag_retrieve(store, query, top_k=20)
 
     return execute
 
